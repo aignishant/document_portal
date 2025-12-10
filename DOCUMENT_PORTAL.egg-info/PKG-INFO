@@ -1,4 +1,14 @@
-Metadata-Version: 2.1
+Metadata-Version: 2.4
 Name: DOCUMENT_PORTAL
 Version: 0.1
 Author: nishkoder
+Requires-Dist: langchain
+Requires-Dist: python-dotenv
+Requires-Dist: ipykernel
+Requires-Dist: langchain_groq
+Requires-Dist: langchain_google_genai
+Requires-Dist: langchain_community
+Requires-Dist: pypdf
+Requires-Dist: faiss-cpu
+Dynamic: author
+Dynamic: requires-dist

@@ -2,3 +2,4 @@ env
 logs/
 .env
 myvenv
+.venv
