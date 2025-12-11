@@ -14,6 +14,59 @@
 | **Context Injection** | Automatically include `request_id`, `user_id` in logs via context propagation. |
 | **Unified Exceptions** | Standardized `AppException` hierarchy with HTTP status codes and error codes. |
 | **Config Loader** | Robust YAML configuration loader with validation and custom exceptions. |
+| **Model Loader** | Generic loader for LLMs and Embeddings (Google, Groq) with API key management. |
+
+
+## 🧠 Model Loader Usage
+
+`ai-common` now includes a generic `ModelLoader` to simplify initializing Language Models and Embeddings.
+
+```python
+from ai_common.model_loader import ModelLoader
+
+# 1. Initialize Loader
+# Tries to load config from path, or uses defaults/env vars
+loader = ModelLoader(config_path="config.yaml")
+
+# 2. Get LLM (defaults to Google Gemini if not specified)
+llm = loader.load_llm(provider="google", model_name="gemini-pro")
+
+# 3. Get Embeddings
+embeddings = loader.load_embeddings()
+```
+
+### Supported Providers
+- **Google Generative AI**: LLM (`gemini-pro`) & Embeddings (`models/embedding-001`)
+- **Groq**: LPU Inference Engine (e.g., `mixtral-8x7b-32768`)
+- **Custom**: Easily extendable via `BaseProvider`.
+
+### Extending Support (Adding Custom Providers)
+
+You can plug in any model provider (e.g., OpenAI, Anthropic, Custom Local Models) by extending `BaseProvider`.
+
+```python
+from ai_common.model_loader import BaseProvider, ApiKeyManager
+
+class MyCustomProvider(BaseProvider):
+    def load_llm(self, api_key_mgr: ApiKeyManager, config: dict, **kwargs):
+        # Initialize your custom LLM here
+        return MyLLM(api_key=api_key_mgr.get("MY_KEY"))
+
+    def load_embedding(self, api_key_mgr: ApiKeyManager, config: dict, **kwargs):
+        return MyEmbeddings()
+
+# Register it
+loader = ModelLoader(config_path="config.yaml")
+loader.register_provider("my_provider", MyCustomProvider())
+
+# Use it
+llm = loader.load_llm(provider="my_provider")
+```
+
+**Environment Variables:**
+- `GOOGLE_API_KEY`
+- `GROQ_API_KEY`
+- `API_KEYS`: JSON string for loading multiple keys (optional).
 
 ---
 
@@ -96,7 +149,9 @@ All exceptions inherit from `AppException` and contain `code`, `message`, and `d
 
 | Version | Date | Changes |
 | :--- | :--- | :--- |
-| **v0.1.1** | *Current* | • Added `ai_common.utils` module.<br>• Added `load_config` function.<br>• Added `ConfigException`. |
+| **v0.1.3** | *Current* | • Refactored `ModelLoader` to use `BaseProvider` pattern for extensibility. |
+| **v0.1.2** | *Previous* | • Added `ai_common.model_loader`.<br>• Introduced `ModelLoader` & `ApiKeyManager`.<br>• Added `ModelException`. |
+| **v0.1.1** | *Previous* | • Added `ai_common.utils` module.<br>• Added `load_config` function.<br>• Added `ConfigException`. |
 | **v0.1.0** | *Initial* | • Initial release with `custom_logger` and basic `AppException` hierarchy. |
 
 ---

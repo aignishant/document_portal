@@ -1,0 +1,11 @@
+embedding_model:
+  model_name: "models/embedding-001"
+
+llm:
+  default_provider: "google"
+  google:
+    model_name: "gemini-pro"
+    temperature: 0.1
+  groq:
+    model_name: "mixtral-8x7b-32768"
+    temperature: 0.5

@@ -5,7 +5,8 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
-PACKAGE_DIR="ai-common"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+PACKAGE_DIR="$SCRIPT_DIR/../ai-common"
 
 # Function to check if a command exists
 command_exists() {
@@ -30,7 +31,7 @@ elif [ -f "setup.py" ]; then
     # Already in the directory maybe?
     echo "Already in package directory or root... checking setup.py"
     if [ ! -f "setup.py" ]; then
-        echo "Error: setup.py not found in current directory or '$PACKAGE_DIR'"
+        echo "Error: setup.py not found in current directory and could not find '$PACKAGE_DIR'"
         exit 1
     fi
 else

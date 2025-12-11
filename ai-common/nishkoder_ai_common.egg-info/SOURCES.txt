@@ -3,6 +3,7 @@ MANIFEST.in
 README.md
 setup.py
 ai_common/__init__.py
+ai_common/model_loader.py
 ai_common/utils.py
 ai_common/exception/__init__.py
 ai_common/exception/custom_exception.py
@@ -12,4 +13,5 @@ ai_common/logger/logger_utils.py
 nishkoder_ai_common.egg-info/PKG-INFO
 nishkoder_ai_common.egg-info/SOURCES.txt
 nishkoder_ai_common.egg-info/dependency_links.txt
+nishkoder_ai_common.egg-info/requires.txt
 nishkoder_ai_common.egg-info/top_level.txt

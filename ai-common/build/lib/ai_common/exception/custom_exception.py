@@ -92,3 +92,12 @@ class ConfigException(AppException):
             status_code=500, 
             details=details
         )
+
+class ModelException(AppException):
+    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
+        super().__init__(
+            message=message, 
+            code="MODEL_ERROR", 
+            status_code=500, 
+            details=details
+        )
