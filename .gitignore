@@ -3,3 +3,5 @@ logs/
 .env
 myvenv
 .venv
+DOCUMENT_PORTAL.egg-info/
+test_logs
