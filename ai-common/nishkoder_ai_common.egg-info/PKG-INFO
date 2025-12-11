@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: nishkoder-ai-common
-Version: 0.1.0
+Version: 0.1.1
 Summary: Common utilities for AI projects including logging and exceptions
 Author: nishkoder
 Classifier: Programming Language :: Python :: 3
@@ -17,129 +17,109 @@ Dynamic: license-file
 Dynamic: requires-python
 Dynamic: summary
 
-# AI Common Utilities (`ai-common`)
+# ai-common
 
-**Robust Logging and Exception Handling for AI Applications.**
+**Production-Grade Utilities for AI/ML Applications**
 
-`ai-common` provides a production-ready, structured logging system and a standardized exception hierarchy designed specifically for modern Python AI/ML applications.
+`ai-common` is a comprehensive library designed to standardize logging, exception handling, and configuration management across Python AI projects. It ensures observability, consistency, and reliability.
+
+---
 
 ## 🚀 Key Features
 
-*   **JSON Logging**: Automatically formats logs as JSON for easy integration with Splunk, Datadog, ELK, etc.
-*   **Context Awareness**: Inject request IDs, user IDs, or any other context into every log message automatically.
-*   **Standardized Exceptions**: Pre-built hierarchy for universal errors like `ResourceNotFound`, `ValidationException`, etc.
-*   **Auto-Logging Exceptions**: Catch and log exceptions with full stack traces and context in one line.
+| Feature | Description |
+| :--- | :--- |
+| **JSON Logging** | Structured logging output compatible with Splunk, Datadog, ELK, etc. |
+| **Context Injection** | Automatically include `request_id`, `user_id` in logs via context propagation. |
+| **Unified Exceptions** | Standardized `AppException` hierarchy with HTTP status codes and error codes. |
+| **Config Loader** | Robust YAML configuration loader with validation and custom exceptions. |
+
+---
 
 ## 📦 Installation
 
 ```bash
-pip install ai-common
+pip install nishkoder-ai-common
 ```
 
-## 🛠 Usage
+---
 
-### 1. Advanced Logging
+## 🛠 Quick Start
 
-Stop using print statements or basic logging. Use `ai-common` to produce structured, queryable logs.
-
-#### Basic Usage
+### Logging
 ```python
 from ai_common.logger.custom_logger import logger
 
-logger.info("Model loaded successfully", extra={"model_name": "gpt-4", "version": "v2"})
-# Output: {"timestamp": "...", "level": "INFO", "message": "Model loaded successfully", "model_name": "gpt-4", "version": "v2"}
+# Basic Info Log
+logger.info("Application started", extra={"env": "production"})
 ```
 
-#### Adding Context (Middleware/Request Scope)
-Bind context once, and it appears in all subsequent logs.
-
+### Configuration
 ```python
-from ai_common.logger.custom_logger import logger
-from ai_common.logger.logger_utils import add_context
-
-def process_request(request_id, user_id):
-    # Create a logger specific to this request
-    ctx_logger = add_context(logger, request_id=request_id, user_id=user_id)
-    
-    ctx_logger.info("Processing started")
-    # ... business logic ...
-    ctx_logger.info("Processing finished")
-    
-    # Both log entries will automatically include "request_id" and "user_id"
-```
-
-### 2. Exception Handling
-
-Use `AppException` as your base class to ensure all errors have standard codes and HTTP-friendly status codes.
-
-#### Built-in Exceptions
-*   `ResourceNotFoundException` (404)
-*   `ValidationException` (400)
-*   `AuthenticationException` (401)
-*   `PermissionDeniedException` (403)
-*   `DatabaseException` (500)
-
-#### Raising Exceptions
-```python
-from ai_common.exception.custom_exception import ResourceNotFoundException
-
-def get_user(user_id):
-    if not user_id:
-        raise ResourceNotFoundException(
-            "User not found",
-            details={"user_id": user_id}
-        )
-```
-
-#### Handling and Logging Exceptions
-The `log_error()` helper keeps your `except` blocks clean.
-
-```python
-from ai_common.exception.custom_exception import AppException
+from ai_common.utils import load_config
+from ai_common.exception.custom_exception import ConfigException
 
 try:
-    get_user(123)
-except AppException as e:
-    # Automatically logs error + code + details + stack trace as structured JSON
-    e.log_error()
-    
-    # Return a clean dictionary to your API client
-    return e.to_dict() 
-    # Returns: {"error": {"code": "RESOURCE_NOT_FOUND", "message": "...", "details": {...}}}
-```
-
-#### Defining Custom Exceptions
-Inherit from `AppException` to create domain-specific errors.
-
-```python
-from ai_common.exception.custom_exception import AppException
-
-class AIModelException(AppException):
-    def __init__(self, message, details=None):
-        super().__init__(
-            message=message,
-            code="AI_MODEL_ERROR",
-            status_code=503,
-            details=details
-        )
+    config = load_config("config.yaml")
+    print(config['db_host'])
+except ConfigException as e:
+    logger.error(f"Config error: {e}")
 ```
 
 ---
 
 ## 📚 API Reference
 
-### `ai_common.logger`
-*   **`logger`**: The main pre-configured application logger instance.
-*   **`get_logger(name="app")`**: Factory to create a new logger with JSON formatting.
-*   **`add_context(logger, **kwargs)`**: Returns a `LoggerAdapter` with injected context.
+### 1. Logging Module (`ai_common.logger`)
 
-### `ai_common.exception`
-*   **`AppException(message, code, status_code, details)`**: Base class.
-    *   `to_dict()`: Returns dict representation.
-    *   `log_error(custom_logger=None)`: Logs the exception.
+**Import:** `from ai_common.logger import ...`
+
+| Component | Type | Signature | Description |
+| :--- | :--- | :--- | :--- |
+| `logger` | `logging.Logger` | N/A | Pre-configured JSON logger instance. Use this for general logging. |
+| `get_logger` | `Function` | `(name="app") -> Logger` | Factory to create a new logger instance with JSON formatting. |
+| `add_context` | `Function` | `(logger, **kwargs) -> LoggerAdapter` | Wraps a logger to inject context (e.g., `request_id`) into every log message. |
+
+### 2. Utilities Module (`ai_common`)
+
+**Import:** `from ai_common.utils import ...`
+
+| Function | Signature | Description |
+| :--- | :--- | :--- |
+| `load_config` | `(config_path: str) -> Dict` | Loads a YAML file into a dictionary. Raises `ConfigException` if invalid. |
+
+### 3. Exception Handling (`ai_common.exception`)
+
+**Import:** `from ai_common.exception.custom_exception import ...`
+
+All exceptions inherit from `AppException` and contain `code`, `message`, and `details`.
+
+#### Base Class
+| Class | Description | Method `to_dict()` |
+| :--- | :--- | :--- |
+| `AppException` | Base exception class for all application errors. | Returns `{"error": {"code": "...", "message": "...", "details": ...}}` |
+
+#### Standard Exceptions
+| Exception Name | HTTP Code | Error Code | Usage Scenario |
+| :--- | :--- | :--- | :--- |
+| `ResourceNotFoundException` | `404` | `RESOURCE_NOT_FOUND` | When a requested entity (user, file, doc) is missing. |
+| `ValidationException` | `400` | `VALIDATION_ERROR` | When input data fails validation checks. |
+| `AuthenticationException` | `401` | `AUTHENTICATION_FAILED` | When auth credentials are missing or invalid. |
+| `PermissionDeniedException` | `403` | `PERMISSION_DENIED` | When user is authenticated but lacks permissions. |
+| `DatabaseException` | `500` | `DATABASE_ERROR` | Wrapper for DB connectivity or query errors. |
+| `ConfigException` | `500` | `CONFIGURATION_ERROR` | Errors related to loading or parsing configuration files. |
+
+---
+
+## 📝 Changelog
+
+| Version | Date | Changes |
+| :--- | :--- | :--- |
+| **v0.1.1** | *Current* | • Added `ai_common.utils` module.<br>• Added `load_config` function.<br>• Added `ConfigException`. |
+| **v0.1.0** | *Initial* | • Initial release with `custom_logger` and basic `AppException` hierarchy. |
 
 ---
 
 ## License
 
-MIT
+MIT License
