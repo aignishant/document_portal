@@ -1,15 +1,15 @@
 import pytest
 import json
 import logging
-from exception.custom_exception import (
-    DocumentPortalException,
+from ai_common.exception.custom_exception import (
+    AppException,
     ResourceNotFoundException,
     ValidationException,
     AuthenticationException,
     PermissionDeniedException,
     DatabaseException
 )
-from logger.custom_logger import JsonFormatter, get_logger
+from ai_common.logger.custom_logger import JsonFormatter, get_logger
 
 # Helper to capture logs
 @pytest.fixture
@@ -31,7 +31,7 @@ def capture_logs():
     return list_handler, logger
 
 def test_base_exception_initialization():
-    exc = DocumentPortalException(
+    exc = AppException(
         message="Something went wrong",
         code="TEST_ERROR",
         status_code=418,
@@ -43,7 +43,7 @@ def test_base_exception_initialization():
     assert exc.details == {"foo": "bar"}
 
 def test_exception_to_dict():
-    exc = DocumentPortalException(
+    exc = AppException(
         message="Error",
         code="ERR",
         status_code=500
@@ -55,7 +55,7 @@ def test_exception_to_dict():
 
 def test_exception_logging(capture_logs):
     handler, logger = capture_logs
-    exc = DocumentPortalException(
+    exc = AppException(
         message="Log me",
         code="LOG_ERR",
         status_code=500,

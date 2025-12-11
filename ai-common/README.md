@@ -1,0 +1,126 @@
+# AI Common Utilities (`ai-common`)
+
+**Robust Logging and Exception Handling for AI Applications.**
+
+`ai-common` provides a production-ready, structured logging system and a standardized exception hierarchy designed specifically for modern Python AI/ML applications.
+
+## 🚀 Key Features
+
+*   **JSON Logging**: Automatically formats logs as JSON for easy integration with Splunk, Datadog, ELK, etc.
+*   **Context Awareness**: Inject request IDs, user IDs, or any other context into every log message automatically.
+*   **Standardized Exceptions**: Pre-built hierarchy for universal errors like `ResourceNotFound`, `ValidationException`, etc.
+*   **Auto-Logging Exceptions**: Catch and log exceptions with full stack traces and context in one line.
+
+## 📦 Installation
+
+```bash
+pip install ai-common
+```
+
+## 🛠 Usage
+
+### 1. Advanced Logging
+
+Stop using print statements or basic logging. Use `ai-common` to produce structured, queryable logs.
+
+#### Basic Usage
+```python
+from ai_common.logger.custom_logger import logger
+
+logger.info("Model loaded successfully", extra={"model_name": "gpt-4", "version": "v2"})
+# Output: {"timestamp": "...", "level": "INFO", "message": "Model loaded successfully", "model_name": "gpt-4", "version": "v2"}
+```
+
+#### Adding Context (Middleware/Request Scope)
+Bind context once, and it appears in all subsequent logs.
+
+```python
+from ai_common.logger.custom_logger import logger
+from ai_common.logger.logger_utils import add_context
+
+def process_request(request_id, user_id):
+    # Create a logger specific to this request
+    ctx_logger = add_context(logger, request_id=request_id, user_id=user_id)
+    
+    ctx_logger.info("Processing started")
+    # ... business logic ...
+    ctx_logger.info("Processing finished")
+    
+    # Both log entries will automatically include "request_id" and "user_id"
+```
+
+### 2. Exception Handling
+
+Use `AppException` as your base class to ensure all errors have standard codes and HTTP-friendly status codes.
+
+#### Built-in Exceptions
+*   `ResourceNotFoundException` (404)
+*   `ValidationException` (400)
+*   `AuthenticationException` (401)
+*   `PermissionDeniedException` (403)
+*   `DatabaseException` (500)
+
+#### Raising Exceptions
+```python
+from ai_common.exception.custom_exception import ResourceNotFoundException
+
+def get_user(user_id):
+    if not user_id:
+        raise ResourceNotFoundException(
+            "User not found",
+            details={"user_id": user_id}
+        )
+```
+
+#### Handling and Logging Exceptions
+The `log_error()` helper keeps your `except` blocks clean.
+
+```python
+from ai_common.exception.custom_exception import AppException
+
+try:
+    get_user(123)
+except AppException as e:
+    # Automatically logs error + code + details + stack trace as structured JSON
+    e.log_error()
+    
+    # Return a clean dictionary to your API client
+    return e.to_dict() 
+    # Returns: {"error": {"code": "RESOURCE_NOT_FOUND", "message": "...", "details": {...}}}
+```
+
+#### Defining Custom Exceptions
+Inherit from `AppException` to create domain-specific errors.
+
+```python
+from ai_common.exception.custom_exception import AppException
+
+class AIModelException(AppException):
+    def __init__(self, message, details=None):
+        super().__init__(
+            message=message,
+            code="AI_MODEL_ERROR",
+            status_code=503,
+            details=details
+        )
+```
+
+---
+
+## 📚 API Reference
+
+### `ai_common.logger`
+*   **`logger`**: The main pre-configured application logger instance.
+*   **`get_logger(name="app")`**: Factory to create a new logger with JSON formatting.
+*   **`add_context(logger, **kwargs)`**: Returns a `LoggerAdapter` with injected context.
+
+### `ai_common.exception`
+*   **`AppException(message, code, status_code, details)`**: Base class.
+    *   `to_dict()`: Returns dict representation.
+    *   `log_error(custom_logger=None)`: Logs the exception.
+
+---
+
+## License
+
+MIT

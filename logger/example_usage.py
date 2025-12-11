@@ -3,8 +3,8 @@ import os
 # Ensure log directory exists
 os.makedirs('logs', exist_ok=True)
 
-from logger.custom_logger import logger
-from logger.logger_utils import add_context
+from ai_common.logger.custom_logger import logger
+from ai_common.logger.logger_utils import add_context
 
 # Create a logger with extra context
 context_logger = add_context(logger, request_id='req-123', user_id='user-456')

@@ -1,9 +1,9 @@
 from typing import Optional, Dict, Any
-from logger.custom_logger import logger
-from logger.logger_utils import add_context
+from ai_common.logger.custom_logger import logger
+from ai_common.logger.logger_utils import add_context
 
-class DocumentPortalException(Exception):
-    """Base exception for Document Portal."""
+class AppException(Exception):
+    """Base exception for the Application."""
     
     def __init__(
         self, 
@@ -39,7 +39,7 @@ class DocumentPortalException(Exception):
         ctx_logger = add_context(log, **context_data)
         ctx_logger.error(self.message)
 
-class ResourceNotFoundException(DocumentPortalException):
+class ResourceNotFoundException(AppException):
     def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
         super().__init__(
             message=message, 
@@ -48,7 +48,7 @@ class ResourceNotFoundException(DocumentPortalException):
             details=details
         )
 
-class ValidationException(DocumentPortalException):
+class ValidationException(AppException):
     def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
         super().__init__(
             message=message, 
@@ -57,7 +57,7 @@ class ValidationException(DocumentPortalException):
             details=details
         )
 
-class AuthenticationException(DocumentPortalException):
+class AuthenticationException(AppException):
     def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
         super().__init__(
             message=message, 
@@ -66,7 +66,7 @@ class AuthenticationException(DocumentPortalException):
             details=details
         )
 
-class PermissionDeniedException(DocumentPortalException):
+class PermissionDeniedException(AppException):
     def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
         super().__init__(
             message=message, 
@@ -75,7 +75,7 @@ class PermissionDeniedException(DocumentPortalException):
             details=details
         )
 
-class DatabaseException(DocumentPortalException):
+class DatabaseException(AppException):
     def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
         super().__init__(
             message=message, 

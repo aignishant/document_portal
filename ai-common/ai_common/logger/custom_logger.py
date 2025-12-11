@@ -8,7 +8,7 @@ class JsonFormatter(logging.Formatter):
     """Formatter that outputs log records as JSON strings, including any extra attributes added via LoggerAdapter."""
     def format(self, record: logging.LogRecord) -> str:
         log_record = {
-            "timestamp": datetime.datetime.utcfromtimestamp(record.created).isoformat() + "Z",
+            "timestamp": datetime.datetime.fromtimestamp(record.created, datetime.timezone.utc).isoformat(),
             "level": record.levelname,
             "name": record.name,
             "message": record.getMessage(),
@@ -57,10 +57,13 @@ def get_logger(name: str = "app") -> logging.Logger:
     logger.setLevel(os.getenv("LOG_LEVEL", "INFO").upper())
     log_dir = os.getenv("LOG_DIR", "logs")
     os.makedirs(log_dir, exist_ok=True)
-    log_path = os.path.join(log_dir, "app.log")
-    file_handler = logging.handlers.RotatingFileHandler(
-        log_path, maxBytes=5 * 1024 * 1024, backupCount=5
-    )
+    # Generate a unique log filename with timestamp
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    log_filename = f"app_{timestamp}.log"
+    log_path = os.path.join(log_dir, log_filename)
+
+    # Use FileHandler to create a new file for each run/process
+    file_handler = logging.FileHandler(log_path)
     file_handler.setFormatter(JsonFormatter())
     logger.addHandler(file_handler)
     console_handler = logging.StreamHandler()

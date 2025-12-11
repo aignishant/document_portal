@@ -3,8 +3,8 @@ import json
 import logging
 import logging.handlers
 import pytest
-from logger.custom_logger import JsonFormatter, get_logger
-from logger.logger_utils import add_context
+from ai_common.logger.custom_logger import JsonFormatter, get_logger
+from ai_common.logger.logger_utils import add_context
 
 def test_logger_output():
     # Configure test environment

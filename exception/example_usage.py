@@ -4,14 +4,14 @@ import sys
 # Ensure the project root is in the python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from exception.custom_exception import (
+from ai_common.exception.custom_exception import (
     ResourceNotFoundException,
     ValidationException,
     AuthenticationException,
     PermissionDeniedException,
     DatabaseException
 )
-from logger.custom_logger import logger
+from ai_common.logger.custom_logger import logger
 
 def mimic_business_logic(user_id: int):
     """Simulates a function that might raise various exceptions."""
