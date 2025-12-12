@@ -2,20 +2,21 @@
 Constants for the Document Portal application.
 """
 
-# Common
+
 CONFIG_DIR = "config"
 CONFIG_FILE = "config.yaml"
 
-# Document Analysis
+
 COMPONENT_DOCUMENT_ANALYSIS = "DocumentAnalysis"
 LLM_PROVIDER_GOOGLE = "google"
 MSG_DOC_ANALYSIS_INIT = "DocumentAnalysis initialized"
 ERR_DOC_ANALYSIS_INIT = (
     "Failed to initialize DocumentAnalysis"
-    # Using strict string for prefix
+    "Failed to initialize DocumentAnalysis"
 )
 
-# Data Handler
+
+
 ENV_DATA_STORAGE_PATH = "DATA_STORAGE_PATH"
 DIR_DATA = "data"
 DIR_DOCUMENT_ANALYSIS = "document_analysis"
@@ -30,7 +31,7 @@ ERR_PDF_SAVE = "Failed to save PDF"
 ERR_PDF_READ = "Failed to read PDF"
 FITZ_TEXT_MODE = "text"
 
-# Validation keys and components
+
 KEY_FAISS_DB = "faiss_db"
 KEY_EMBEDDING_MODEL = "embedding_model"
 KEY_RETRIEVER = "retriever"
@@ -39,7 +40,7 @@ KEY_PROVIDER = "provider"
 KEY_MODEL_NAME = "model_name"
 LLM_PROVIDER_GROQ = "groq"
 
-# Validation Messages
+
 MSG_START_CONFIG_VAL = "--- Starting Configuration Validation ---"
 MSG_CONFIG_FILE_NOT_FOUND = "❌ Config file not found at"
 MSG_CONFIG_FILE_FOUND = "✅ Config file found at"

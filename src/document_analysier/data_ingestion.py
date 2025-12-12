@@ -20,16 +20,34 @@ from src.constants import (
     MSG_PDF_SAVED,
 )
 
-# import uuid
-# from datetime import datetime, timezone
+
+
 
 
 class DocumentHandler:
     """
-    DocumentHandler class for handling document ingestion
+    DocumentHandler class for handling document ingestion.
+
+    This class manages the storage and retrieval of document files within a session context,
+    ensuring documents are saved safely and can be read for downstream processing.
     """
 
+
     def __init__(self, data_dir: str = None, session_id: str = None) -> None:
+        """
+        Initializes the DocumentHandler instance.
+
+        Args:
+            data_dir (str, optional): The directory where data should be stored.
+                Defaults to None, in which case a default 'data/document_analysis'
+                directory is used.
+            session_id (str, optional): A unique identifier for the session.
+                Defaults to None, in which case a new session ID is generated.
+
+        Raises:
+            AppException: If initialization fails.
+        """
+
         try:
             self.logger = get_logger(__name__)
             self.data_dir = data_dir or os.getenv(
@@ -48,13 +66,22 @@ class DocumentHandler:
             raise AppException(f"{ERR_DOC_HANDLER_INIT}: {str(e)}")
 
     def save_pdf(self, file_obj) -> str:
-        """Save a PDF file-like object to the session directory.
-
-        The method now accepts an object with a ``path`` attribute (the source file
-        path) and a ``getbuffer()`` method returning the file's bytes. This matches
-        the ``DummyFile`` used in the ``__main__`` block and allows callers to pass
-        any compatible file‑like object.
         """
+        Saves a PDF file-like object to the session directory.
+
+        The method accepts an object with a ``path`` attribute (the source file
+        path) and a ``getbuffer()`` method returning the file's bytes.
+
+        Args:
+            file_obj: A file-like object with `path` and `getbuffer()` attributes.
+
+        Returns:
+            str: The absolute path to the saved PDF file.
+
+        Raises:
+            AppException: If the file object is invalid or saving fails.
+        """
+
         try:
             if not hasattr(file_obj, "path") or not hasattr(file_obj, "getbuffer"):
                 raise AppException(ERR_INVALID_FILE_OBJ)
@@ -73,6 +100,22 @@ class DocumentHandler:
             raise AppException(f"{ERR_PDF_SAVE}: {str(e)}")
 
     def read_pdf(self, pdf_path: str) -> list[str]:
+        """
+        Reads and extracts text from a PDF file.
+
+        Args:
+            pdf_path (str): The path to the PDF file to read.
+
+        Returns:
+            list[str]: A list of strings, where each string contains the text content
+                of a page prefixed by its page number.
+                Note: The current implementation returns a single string joined by newlines.
+                (Signature annotation says list[str], implementation does join)
+
+        Raises:
+            AppException: If reading the PDF fails.
+        """
+
         try:
             text_chunks = []
             with fitz.open(pdf_path) as pdf:
@@ -87,8 +130,8 @@ class DocumentHandler:
 
 
 if __name__ == "__main__":
-    # from io import BytesIO
     from pathlib import Path
+
 
     document_handler = DocumentHandler(session_id="test_session")
 

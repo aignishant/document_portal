@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="nishkoder-ai-common",
-    version="0.1.4",
+    version="0.1.5",
     author="nishkoder",
     description="Common utilities for AI projects including logging and exceptions",
     long_description=long_description,
@@ -18,6 +18,7 @@ setup(
     ],
     python_requires=">=3.8",
     install_requires=[
+        "langchain-core",
         "langchain-google-genai",
         "langchain-groq",
         "python-dotenv",

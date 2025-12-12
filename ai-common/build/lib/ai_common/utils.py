@@ -1,9 +1,11 @@
-import yaml
 import os
-from typing import Dict, Any
-from datetime import datetime, timezone
 import uuid
+from datetime import datetime, timezone
+from typing import Any, Dict
+
+import yaml
 from ai_common.exception.custom_exception import ConfigException
+
 
 def load_config(config_path: str) -> Dict[str, Any]:
     """
@@ -16,12 +18,13 @@ def load_config(config_path: str) -> Dict[str, Any]:
         Dict[str, Any]: The configuration as a dictionary.
 
     Raises:
-        ConfigException: If the config file does not exist or if there is an error parsing the YAML file.
+        ConfigException: If the config file does not exist or if there is an error
+            parsing the YAML file.
     """
     if not os.path.exists(config_path):
         raise ConfigException(f"Config file not found: {config_path}")
 
-    with open(config_path, 'r') as file:
+    with open(config_path, "r") as file:
         try:
             config = yaml.safe_load(file)
             return config
@@ -36,4 +39,5 @@ def generate_session_id() -> str:
         str: A session ID string formatted as
             'session_YYYYMMDD_HHMMSS_<8-char-uuid>'.
     """
-    return f"session_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:8]}"
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    return f"session_{timestamp}_{uuid.uuid4().hex[:8]}"

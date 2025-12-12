@@ -1,23 +1,46 @@
+import datetime
+import json
 import logging
 import logging.handlers
-import json
 import os
-import datetime
+
 
 class JsonFormatter(logging.Formatter):
-    """Formatter that outputs log records as JSON strings, including any extra attributes added via LoggerAdapter."""
+    """Formatter that outputs log records as JSON strings, including extra
+    attributes.
+    """
+
     def format(self, record: logging.LogRecord) -> str:
         log_record = {
-            "timestamp": datetime.datetime.fromtimestamp(record.created, datetime.timezone.utc).isoformat(),
+            "timestamp": datetime.datetime.fromtimestamp(
+                record.created, datetime.timezone.utc
+            ).isoformat(),
             "level": record.levelname,
             "name": record.name,
             "message": record.getMessage(),
         }
         # Include any extra fields added to the LogRecord (e.g., via LoggerAdapter)
         standard_attrs = {
-            "name", "msg", "args", "levelname", "levelno", "pathname", "filename", "module",
-            "exc_info", "exc_text", "stack_info", "lineno", "funcName", "created", "msecs",
-            "relativeCreated", "thread", "threadName", "processName", "process",
+            "name",
+            "msg",
+            "args",
+            "levelname",
+            "levelno",
+            "pathname",
+            "filename",
+            "module",
+            "exc_info",
+            "exc_text",
+            "stack_info",
+            "lineno",
+            "funcName",
+            "created",
+            "msecs",
+            "relativeCreated",
+            "thread",
+            "threadName",
+            "processName",
+            "process",
         }
         for key, value in record.__dict__.items():
             if key not in standard_attrs:
@@ -29,14 +52,16 @@ class JsonFormatter(logging.Formatter):
                     log_record[key] = value
         return json.dumps(log_record, indent=2)
 
+
 class ColorFormatter(logging.Formatter):
     """Formatter that adds ANSI color codes to console log messages based on level."""
+
     LEVEL_COLORS = {
-        "DEBUG": "\033[0;36m",    # cyan
-        "INFO": "\033[0;32m",     # green
+        "DEBUG": "\033[0;36m",  # cyan
+        "INFO": "\033[0;32m",  # green
         "WARNING": "\033[0;33m",  # yellow
-        "ERROR": "\033[0;31m",    # red
-        "CRITICAL": "\033[0;35m", # magenta
+        "ERROR": "\033[0;31m",  # red
+        "CRITICAL": "\033[0;35m",  # magenta
     }
     RESET = "\033[0m"
 
@@ -44,6 +69,7 @@ class ColorFormatter(logging.Formatter):
         msg = super().format(record)
         color = self.LEVEL_COLORS.get(record.levelname, self.RESET)
         return f"{color}{msg}{self.RESET}"
+
 
 def get_logger(name: str = "app") -> logging.Logger:
     """Create and configure a logger with rotating file handler and JSON output.
@@ -70,6 +96,7 @@ def get_logger(name: str = "app") -> logging.Logger:
     console_handler.setFormatter(ColorFormatter("%(levelname)s: %(message)s"))
     logger.addHandler(console_handler)
     return logger
+
 
 # Export a module‑level logger for convenient imports
 logger = get_logger()

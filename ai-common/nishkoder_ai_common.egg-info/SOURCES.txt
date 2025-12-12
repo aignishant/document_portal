@@ -10,6 +10,8 @@ ai_common/exception/custom_exception.py
 ai_common/logger/__init__.py
 ai_common/logger/custom_logger.py
 ai_common/logger/logger_utils.py
+ai_common/prompts/__init__.py
+ai_common/prompts/generic_prompts.py
 nishkoder_ai_common.egg-info/PKG-INFO
 nishkoder_ai_common.egg-info/SOURCES.txt
 nishkoder_ai_common.egg-info/dependency_links.txt

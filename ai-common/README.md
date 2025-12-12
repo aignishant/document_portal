@@ -15,6 +15,7 @@
 | **Unified Exceptions** | Standardized `AppException` hierarchy with HTTP status codes and error codes. |
 | **Config Loader** | Robust YAML configuration loader with validation and custom exceptions. |
 | **Model Loader** | Generic loader for LLMs and Embeddings (Google, Groq) with API key management. |
+| **Generic Prompts** | Pre-built, reusable prompt templates for common tasks (Extraction, Summary, QA). |
 
 
 ## 🧠 Model Loader Usage
@@ -69,6 +70,26 @@ llm = loader.load_llm(provider="my_provider")
 - `API_KEYS`: JSON string for loading multiple keys (optional).
 
 ---
+
+## 🎭 Generic Prompts Usage
+
+Acces standard, battle-tested prompts for common GenAI tasks.
+
+```python
+from ai_common.prompts import get_generic_prompt
+
+# 1. Get a specific prompt by name
+# Available: "json_extraction", "summary", "rag_qa", "query_rewrite", "classification"
+prompt = get_generic_prompt("summary")
+
+# 2. Use it in a LangChain pipeline
+chain = prompt | llm
+
+result = chain.invoke({
+    "input_text": "Split this text...", 
+    "max_words": 50
+})
+```
 
 ## 📦 Installation
 
@@ -144,13 +165,22 @@ All exceptions inherit from `AppException` and contain `code`, `message`, and `d
 | `DatabaseException` | `500` | `DATABASE_ERROR` | Wrapper for DB connectivity or query errors. |
 | `ConfigException` | `500` | `CONFIGURATION_ERROR` | Errors related to loading or parsing configuration files. |
 
+### 4. Generic Prompts (`ai_common.prompts`)
+
+**Import:** `from ai_common.prompts import ...`
+
+| Function | Description |
+| :--- | :--- |
+| `get_generic_prompt(name)` | Returns a `ChatPromptTemplate`. Supported names: `json_extraction`, `summary`, `rag_qa`, `query_rewrite`, `classification`. |
+
 ---
 
 ## 📝 Changelog
 
 | Version | Date | Changes |
 | :--- | :--- | :--- |
-| **v0.1.4** | *Current* | • Added `generate_session_id` utility to `ai_common.utils` for unique session IDs. |
+| **v0.1.5** | *Current* | • Added `ai_common.prompts` with generic templates.<br>• Added `langchain-core` dependency. |
+| **v0.1.4** | *Previous* | • Added `generate_session_id` utility to `ai_common.utils` for unique session IDs. |
 | **v0.1.3** | *Previous* | • Refactored `ModelLoader` to use `BaseProvider` pattern for extensibility. |
 | **v0.1.2** | *Previous* | • Added `ai_common.model_loader`.<br>• Introduced `ModelLoader` & `ApiKeyManager`.<br>• Added `ModelException`. |
 | **v0.1.1** | *Previous* | • Added `ai_common.utils` module.<br>• Added `load_config` function.<br>• Added `ConfigException`. |
