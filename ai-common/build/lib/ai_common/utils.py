@@ -1,6 +1,8 @@
 import yaml
 import os
 from typing import Dict, Any
+from datetime import datetime, timezone
+import uuid
 from ai_common.exception.custom_exception import ConfigException
 
 def load_config(config_path: str) -> Dict[str, Any]:
@@ -25,3 +27,13 @@ def load_config(config_path: str) -> Dict[str, Any]:
             return config
         except yaml.YAMLError as e:
             raise ConfigException(f"Error parsing YAML file: {e}")
+
+
+def generate_session_id() -> str:
+    """Generate a unique session identifier.
+
+    Returns:
+        str: A session ID string formatted as
+            'session_YYYYMMDD_HHMMSS_<8-char-uuid>'.
+    """
+    return f"session_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:8]}"

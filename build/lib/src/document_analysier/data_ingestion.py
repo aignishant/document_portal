@@ -5,7 +5,6 @@ from datetime import datetime, timezone
 
 from ai_common.logger.custom_logger import logger, get_logger
 from ai_common.logger.logger_utils import add_context
-from ai_common.utils import generate_session_id
 from ai_common.exception.custom_exception import AppException
 
 
@@ -20,7 +19,10 @@ class DocumentHandler:
                 "DATA_STORAGE_PATH",
                 os.path.join(os.getcwd(), "data", "document_analysis")
             )
-            self.session_id = session_id or generate_session_id()
+            self.session_id = session_id or (
+                f"session_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:8]}"
+            )
+
             self.session_path = os.path.join(self.data_dir, self.session_id)
             if not os.path.exists(self.session_path):
                 os.makedirs(self.session_path)

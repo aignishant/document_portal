@@ -121,6 +121,7 @@ except ConfigException as e:
 | Function | Signature | Description |
 | :--- | :--- | :--- |
 | `load_config` | `(config_path: str) -> Dict` | Loads a YAML file into a dictionary. Raises `ConfigException` if invalid. |
+| `generate_session_id` | `() -> str` | Generates a unique session identifier string formatted as `session_YYYYMMDD_HHMMSS_<8-char-uuid>`. |
 
 ### 3. Exception Handling (`ai_common.exception`)
 
@@ -149,7 +150,8 @@ All exceptions inherit from `AppException` and contain `code`, `message`, and `d
 
 | Version | Date | Changes |
 | :--- | :--- | :--- |
-| **v0.1.3** | *Current* | • Refactored `ModelLoader` to use `BaseProvider` pattern for extensibility. |
+| **v0.1.4** | *Current* | • Added `generate_session_id` utility to `ai_common.utils` for unique session IDs. |
+| **v0.1.3** | *Previous* | • Refactored `ModelLoader` to use `BaseProvider` pattern for extensibility. |
 | **v0.1.2** | *Previous* | • Added `ai_common.model_loader`.<br>• Introduced `ModelLoader` & `ApiKeyManager`.<br>• Added `ModelException`. |
 | **v0.1.1** | *Previous* | • Added `ai_common.utils` module.<br>• Added `load_config` function.<br>• Added `ConfigException`. |
 | **v0.1.0** | *Initial* | • Initial release with `custom_logger` and basic `AppException` hierarchy. |

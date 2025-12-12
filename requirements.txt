@@ -9,3 +9,4 @@ pypdf
 faiss-cpu
 pytest
 nishkoder-ai-common
+PyMuPDF>=1.24.0
