@@ -12,6 +12,12 @@ retriever:
 
 
 llm:
+  default_provider: "groq"
+  google:
+    provider: "google"
+    model_name: "gemini-2.0-flash"
+    temperature: 0.2
+    max_output_tokens: 2048
   groq:
     provider: "groq"
     model_name: "llama-3.3-70b-versatile"

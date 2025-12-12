@@ -8,14 +8,13 @@ from ai_common.model_loader import ModelLoader
 from dotenv import load_dotenv
 from langchain_classic.output_parsers import OutputFixingParser
 from langchain_core.output_parsers import JsonOutputParser
-
+from prompt.prompt_lib import *
 from model.models import Metadata
 from src.constants import (
     COMPONENT_DOCUMENT_ANALYSIS,
     CONFIG_DIR,
     CONFIG_FILE,
     ERR_DOC_ANALYSIS_INIT,
-    LLM_PROVIDER_GOOGLE,
     MSG_DOC_ANALYSIS_INIT,
 )
 
@@ -28,7 +27,7 @@ class DocumentAnalysis:
     models, and setting up the LLM for processing documents.
     """
 
-    def __init__(self, config_path: str = None):
+    def __init__(self, config_path: str = None, prompt: str = None):
         """
         Initializes the DocumentAnalysis instance.
 
@@ -60,28 +59,40 @@ class DocumentAnalysis:
                 config_path = os.path.join(config_path, CONFIG_FILE)
 
             self.loader = ModelLoader(config_path=config_path)
-            self.llm = self.loader.load_llm(provider=LLM_PROVIDER_GOOGLE)
+            self.llm = self.loader.load_llm()
 
             self.parser = JsonOutputParser(pydantic_object=Metadata)
             self.fixing_parser = OutputFixingParser.from_llm(
                 parser=self.parser, llm=self.llm
             )
+            self.document_analysis_prompt = prompt if prompt else document_analysis_prompt
 
             self.logger.info(MSG_DOC_ANALYSIS_INIT)
         except Exception as e:
-            self.logger.error(f"{ERR_DOC_ANALYSIS_INIT}: {str(e)}")
-            raise AppException(f"{ERR_DOC_ANALYSIS_INIT}:", sys)
+            self.logger.error("%s: %s", ERR_DOC_ANALYSIS_INIT, str(e))
+            raise AppException(f"{ERR_DOC_ANALYSIS_INIT}:", sys) from e
 
-    def analyze_document(self):
+    def analyze_document(self, document_text: str) -> dict:
         """
         Analyzes a document.
 
         This method is currently a placeholder for the document analysis logic.
         """
-
-        pass
+        self.logger.info('Document analysis started')
+        try:
+            chain = self.document_analysis_prompt | self.llm | self.fixing_parser
+            self.logger.info("Document analysis completed successfully")
+            response = chain.invoke({
+                "format_instructions": self.parser.get_format_instructions(),
+                "document_text": document_text
+            })
+            return response
+        except Exception as e:
+            self.logger.error("Document analysis failed: %s", str(e))
+            raise AppException(f"Document analysis failed: {str(e)}") from e
 
 
 if __name__ == "__main__":
     document_analysis = DocumentAnalysis()
-    document_analysis.analyze_document()
+    res = document_analysis.analyze_document(document_text="")
+    print(res)
