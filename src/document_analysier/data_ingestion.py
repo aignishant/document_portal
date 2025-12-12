@@ -21,9 +21,6 @@ from src.constants import (
 )
 
 
-
-
-
 class DocumentHandler:
     """
     DocumentHandler class for handling document ingestion.

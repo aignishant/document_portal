@@ -8,7 +8,7 @@ from ai_common.model_loader import ModelLoader
 from dotenv import load_dotenv
 from langchain_classic.output_parsers import OutputFixingParser
 from langchain_core.output_parsers import JsonOutputParser
-from prompt.prompt_lib import *
+from prompt.prompt_lib import PROMPT_REGISTRY
 from model.models import Metadata
 from src.constants import (
     COMPONENT_DOCUMENT_ANALYSIS,
@@ -27,7 +27,7 @@ class DocumentAnalysis:
     models, and setting up the LLM for processing documents.
     """
 
-    def __init__(self, config_path: str = None, prompt: str = None):
+    def __init__(self, config_path: str = None):
         """
         Initializes the DocumentAnalysis instance.
 
@@ -65,7 +65,7 @@ class DocumentAnalysis:
             self.fixing_parser = OutputFixingParser.from_llm(
                 parser=self.parser, llm=self.llm
             )
-            self.document_analysis_prompt = prompt if prompt else document_analysis_prompt
+            self.document_analysis_prompt = PROMPT_REGISTRY["document_analysis"]
 
             self.logger.info(MSG_DOC_ANALYSIS_INIT)
         except Exception as e:
