@@ -1,98 +1,143 @@
 import os
+
 import yaml
 from dotenv import load_dotenv
-from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
+from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_groq import ChatGroq
 
+from src.constants import (
+    CONFIG_DIR,
+    CONFIG_FILE,
+    ERR_GOOGLE_EMB_EMPTY,
+    ERR_GOOGLE_EMB_FAIL,
+    ERR_GOOGLE_LLM_EMPTY,
+    ERR_GOOGLE_LLM_FAIL,
+    ERR_GROQ_LLM_EMPTY,
+    ERR_GROQ_LLM_FAIL,
+    ERR_MISSING_KEY,
+    ERR_YAML_PARSE,
+    KEY_EMBEDDING_MODEL,
+    KEY_FAISS_DB,
+    KEY_LLM,
+    KEY_MODEL_NAME,
+    KEY_PROVIDER,
+    KEY_RETRIEVER,
+    LLM_PROVIDER_GOOGLE,
+    LLM_PROVIDER_GROQ,
+    MSG_CONFIG_FILE_FOUND,
+    MSG_CONFIG_FILE_NOT_FOUND,
+    MSG_CONFIG_YAML_LOADED,
+    MSG_ENV_LOADED,
+    MSG_ENV_NOT_FOUND,
+    MSG_GOOGLE_EMB_WORKING,
+    MSG_GOOGLE_LLM_WORKING,
+    MSG_GROQ_LLM_WORKING,
+    MSG_KEY_PRESENT,
+    MSG_SKIP_EMB_TEST,
+    MSG_SKIP_GOOGLE_TEST,
+    MSG_SKIP_GROQ_TEST,
+    MSG_START_CONFIG_VAL,
+    MSG_TEST_GOOGLE_EMB,
+    MSG_TEST_GOOGLE_LLM,
+    MSG_TEST_GROQ_LLM,
+    MSG_VAL_COMPLETE,
+    TEST_PROMPT,
+    TEST_QUERY,
+)
+
+
 def validate_config():
-    print("--- Starting Configuration Validation ---")
-    
+    print(MSG_START_CONFIG_VAL)
+
     # 1. Check Config File Existence
-    config_path = "config/config.yaml"
+    config_path = os.path.join(CONFIG_DIR, CONFIG_FILE)
     if not os.path.exists(config_path):
-        print(f"❌ Config file not found at {config_path}")
+        print(f"{MSG_CONFIG_FILE_NOT_FOUND} {config_path}")
         return
-    print(f"✅ Config file found at {config_path}")
+    print(f"{MSG_CONFIG_FILE_FOUND} {config_path}")
 
     # 2. Check .env content (blindly, just checking if we can load it)
     if not load_dotenv():
-        print("⚠️ .env file not found or empty (this might be expected if env vars are set otherwise)")
+        print(MSG_ENV_NOT_FOUND)
     else:
-        print("✅ Client environment variables loaded")
+        print(MSG_ENV_LOADED)
 
     # 3. Load Config
     with open(config_path, "r") as f:
         try:
             config = yaml.safe_load(f)
-            print("✅ Config YAML loaded successfully")
+            print(MSG_CONFIG_YAML_LOADED)
         except yaml.YAMLError as e:
-            print(f"❌ Failed to parse YAML: {e}")
+            print(f"{ERR_YAML_PARSE}: {e}")
             return
 
     # 4. Validate Structure (Basic checks)
-    required_keys = ["faiss_db", "embedding_model", "retriever", "llm"]
+    required_keys = [KEY_FAISS_DB, KEY_EMBEDDING_MODEL, KEY_RETRIEVER, KEY_LLM]
     for key in required_keys:
         if key not in config:
-            print(f"❌ Missing required key in config: {key}")
+            print(f"{ERR_MISSING_KEY}: {key}")
         else:
-            print(f"✅ Key '{key}' present")
+            print(MSG_KEY_PRESENT.format(key))
 
     # 5. Validate Embedding Model (Google)
     try:
-        emb_config = config.get("embedding_model", {})
-        if emb_config.get("provider") == "google":
-            model = emb_config.get("model_name")
-            print(f"Testing Google Embeddings ({model})...")
-            
+        emb_config = config.get(KEY_EMBEDDING_MODEL, {})
+        if emb_config.get(KEY_PROVIDER) == LLM_PROVIDER_GOOGLE:
+            model = emb_config.get(KEY_MODEL_NAME)
+            print(MSG_TEST_GOOGLE_EMB.format(model))
+
             embeddings = GoogleGenerativeAIEmbeddings(model=model)
             # Try to embed a simple string
-            res = embeddings.embed_query("dataset")
+            res = embeddings.embed_query(TEST_QUERY)
             if res and len(res) > 0:
-                 print("✅ Google Embeddings working")
+                print(MSG_GOOGLE_EMB_WORKING)
             else:
-                 print("❌ Google Embeddings returned empty result")
+                print(ERR_GOOGLE_EMB_EMPTY)
         else:
-             print(f"ℹ️ Skipping Embedding test (Provider: {emb_config.get('provider')})")
+            print(MSG_SKIP_EMB_TEST.format(emb_config.get(KEY_PROVIDER)))
     except Exception as e:
-        print(f"❌ Google Embeddings Failed: {e}")
+        print(f"{ERR_GOOGLE_EMB_FAIL}: {e}")
 
     # 6. Validate LLM (Groq)
     try:
-        llm_config = config.get("llm", {}).get("groq", {})
-        if llm_config.get("provider") == "groq":
-            model = llm_config.get("model_name")
-            print(f"Testing Groq LLM ({model})...")
-            
+        llm_config = config.get(KEY_LLM, {}).get(LLM_PROVIDER_GROQ, {})
+        if llm_config.get(KEY_PROVIDER) == LLM_PROVIDER_GROQ:
+            model = llm_config.get(KEY_MODEL_NAME)
+            print(MSG_TEST_GROQ_LLM.format(model))
+
             chat = ChatGroq(model=model, temperature=0)
-            res = chat.invoke("Say 'Hello'")
+            res = chat.invoke(TEST_PROMPT)
             if res:
-                print(f"✅ Groq LLM working. Response: {res.content}")
+                print(MSG_GROQ_LLM_WORKING.format(res.content))
             else:
-                print("❌ Groq LLM returned empty response")
+                print(ERR_GROQ_LLM_EMPTY)
         else:
-             print("ℹ️ Skipping Groq LLM test")
+            print(MSG_SKIP_GROQ_TEST)
     except Exception as e:
-        print(f"❌ Groq LLM Failed: {e}")
+        print(f"{ERR_GROQ_LLM_FAIL}: {e}")
 
     # 7. Validate LLM (Google)
     try:
-        llm_config = config.get("llm", {}).get("google", {})
-        if llm_config.get("provider") == "google":
-            model = llm_config.get("model_name")
-            print(f"Testing Google LLM ({model})...")
-            
-            chat = ChatGoogleGenerativeAI(model=model, temperature=0, max_output_tokens=1024)
-            res = chat.invoke("Say 'Hello'")
-            if res:
-                 print(f"✅ Google LLM working. Response: {res.content}")
-            else:
-                 print("❌ Google LLM returned empty response")
-        else:
-             print("ℹ️ Skipping Google LLM test")
-    except Exception as e:
-        print(f"❌ Google LLM Failed: {e}")
+        llm_config = config.get(KEY_LLM, {}).get(LLM_PROVIDER_GOOGLE, {})
+        if llm_config.get(KEY_PROVIDER) == LLM_PROVIDER_GOOGLE:
+            model = llm_config.get(KEY_MODEL_NAME)
+            print(MSG_TEST_GOOGLE_LLM.format(model))
 
-    print("--- Validation Complete ---")
+            chat = ChatGoogleGenerativeAI(
+                model=model, temperature=0, max_output_tokens=1024
+            )
+            res = chat.invoke(TEST_PROMPT)
+            if res:
+                print(MSG_GOOGLE_LLM_WORKING.format(res.content))
+            else:
+                print(ERR_GOOGLE_LLM_EMPTY)
+        else:
+            print(MSG_SKIP_GOOGLE_TEST)
+    except Exception as e:
+        print(f"{ERR_GOOGLE_LLM_FAIL}: {e}")
+
+    print(MSG_VAL_COMPLETE)
+
 
 if __name__ == "__main__":
     validate_config()

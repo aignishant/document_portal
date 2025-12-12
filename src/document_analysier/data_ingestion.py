@@ -1,87 +1,107 @@
 import os
-import fitz
-import uuid
-from datetime import datetime, timezone
 
-from ai_common.logger.custom_logger import logger, get_logger
+import fitz
+from ai_common.exception.custom_exception import AppException
+from ai_common.logger.custom_logger import get_logger
 from ai_common.logger.logger_utils import add_context
 from ai_common.utils import generate_session_id
-from ai_common.exception.custom_exception import AppException
+
+from src.constants import (
+    DIR_DATA,
+    DIR_DOCUMENT_ANALYSIS,
+    ENV_DATA_STORAGE_PATH,
+    ERR_DOC_HANDLER_INIT,
+    ERR_INVALID_FILE_OBJ,
+    ERR_PDF_NOT_FOUND,
+    ERR_PDF_READ,
+    ERR_PDF_SAVE,
+    FITZ_TEXT_MODE,
+    MSG_DOC_HANDLER_INIT,
+    MSG_PDF_SAVED,
+)
+
+# import uuid
+# from datetime import datetime, timezone
 
 
 class DocumentHandler:
     """
     DocumentHandler class for handling document ingestion
     """
+
     def __init__(self, data_dir: str = None, session_id: str = None) -> None:
         try:
             self.logger = get_logger(__name__)
             self.data_dir = data_dir or os.getenv(
-                "DATA_STORAGE_PATH",
-                os.path.join(os.getcwd(), "data", "document_analysis")
+                ENV_DATA_STORAGE_PATH,
+                os.path.join(os.getcwd(), DIR_DATA, DIR_DOCUMENT_ANALYSIS),
             )
             self.session_id = session_id or generate_session_id()
             self.session_path = os.path.join(self.data_dir, self.session_id)
             if not os.path.exists(self.session_path):
                 os.makedirs(self.session_path)
-            
+
             self.logger = add_context(self.logger, session_id=self.session_id)
-            self.logger.info(f"DocumentHandler initialized with session_id: {self.session_id}")
+            self.logger.info(f"{MSG_DOC_HANDLER_INIT}: {self.session_id}")
         except Exception as e:
-            self.logger.error(f"Failed to initialize DocumentHandler: {str(e)}")
-            raise AppException(f"Failed to initialize DocumentHandler: {str(e)}")
-    
+            self.logger.error(f"{ERR_DOC_HANDLER_INIT}: {str(e)}")
+            raise AppException(f"{ERR_DOC_HANDLER_INIT}: {str(e)}")
+
     def save_pdf(self, file_obj) -> str:
         """Save a PDF file-like object to the session directory.
 
-        The method now accepts an object with a ``path`` attribute (the source file path)
-        and a ``getbuffer()`` method returning the file's bytes. This matches the ``DummyFile``
-        used in the ``__main__`` block and allows callers to pass any compatible file‑like
-        object.
+        The method now accepts an object with a ``path`` attribute (the source file
+        path) and a ``getbuffer()`` method returning the file's bytes. This matches
+        the ``DummyFile`` used in the ``__main__`` block and allows callers to pass
+        any compatible file‑like object.
         """
         try:
             if not hasattr(file_obj, "path") or not hasattr(file_obj, "getbuffer"):
-                raise AppException("Provided file object must have 'path' and 'getbuffer' attributes")
+                raise AppException(ERR_INVALID_FILE_OBJ)
 
             if not os.path.exists(file_obj.path):
-                raise AppException(f"PDF file not found at path: {file_obj.path}")
+                raise AppException(f"{ERR_PDF_NOT_FOUND}: {file_obj.path}")
 
             pdf_name = os.path.basename(file_obj.path)
             dest_path = os.path.join(self.session_path, pdf_name)
             with open(dest_path, "wb") as f:
                 f.write(file_obj.getbuffer())
-            self.logger.info(f"PDF saved to: {dest_path}")
+            self.logger.info(f"{MSG_PDF_SAVED}: {dest_path}")
             return dest_path
         except Exception as e:
-            self.logger.error(f"Failed to save PDF: {str(e)}")
-            raise AppException(f"Failed to save PDF: {str(e)}")
+            self.logger.error(f"{ERR_PDF_SAVE}: {str(e)}")
+            raise AppException(f"{ERR_PDF_SAVE}: {str(e)}")
 
     def read_pdf(self, pdf_path: str) -> list[str]:
         try:
             text_chunks = []
             with fitz.open(pdf_path) as pdf:
                 for page_num, page in enumerate(pdf, start=1):
-                    text = page.get_text("text")
+                    text = page.get_text(FITZ_TEXT_MODE)
                     text_chunks.append(f"\n--- Page {page_num}  ---\n{text}")
             text = "\n".join(text_chunks)
             return text
         except Exception as e:
-            self.logger.error(f"Failed to read PDF: {str(e)}")
-            raise AppException(f"Failed to read PDF: {str(e)}")
+            self.logger.error(f"{ERR_PDF_READ}: {str(e)}")
+            raise AppException(f"{ERR_PDF_READ}: {str(e)}")
 
 
 if __name__ == "__main__":
+    # from io import BytesIO
     from pathlib import Path
-    from io import BytesIO
-    document_handler = DocumentHandler(session_id='test_session')
 
-    pdf_path = Path("/home/aignishant/Documents/genaiproject/dp/document_portal/data/document_analysis/NIPS-2017-attention-is-all-you-need-Paper.pdf")
-    
+    document_handler = DocumentHandler(session_id="test_session")
+
+    pdf_path = Path(
+        "/home/aignishant/Documents/genaiproject/dp/document_portal/data/"
+        "document_analysis/NIPS-2017-attention-is-all-you-need-Paper.pdf"
+    )
+
     class DummyFile:
         def __init__(self, path):
             self.name = Path(path).name
             self.path = path
-        
+
         def getbuffer(self):
             with open(self.path, "rb") as f:
                 return f.read()
