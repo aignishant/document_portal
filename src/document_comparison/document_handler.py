@@ -28,8 +28,20 @@ class DocumentComparisonHandler:
             self.logger = get_logger(__name__)
             self.session_id = session_id or generate_session_id()
             self.logger = add_context(self.logger, session_id=self.session_id)
-            self.file_path = Path(file_path) if file_path else Path("data")
+
+            # Determine project root (3 levels up: src/document_comparison/ -> src/ -> document_portal/)
+            project_root = Path(__file__).resolve().parent.parent.parent
+
+            if file_path:
+                self.file_path = Path(file_path)
+                if not self.file_path.is_absolute():
+                    self.file_path = project_root / self.file_path
+            else:
+                self.file_path = project_root / "data"
+
             self.file_path.mkdir(parents=True, exist_ok=True)
+            self.logger.info(
+                f"Document comparison handler initialized with storage: {self.file_path}")
             self.logger.info("Document comparison handler initialized successfully")
 
         except Exception as e:
@@ -78,8 +90,7 @@ class DocumentComparisonHandler:
         try:
             saved_paths = []
             self.delete_existing_files()
-            reference_file = self.file_path / reference_file.name
-            actual_file = self.file_path / actual_file.name
+
             for file_input, file_name in [(reference_file, reference_file_name), (actual_file, actual_file_name)]:
                 if isinstance(file_input, str):
                     if not os.path.exists(file_input):
@@ -95,6 +106,7 @@ class DocumentComparisonHandler:
                         file_content, str(self.file_path), file_name=file_name)
 
                 else:
+
                     saved_path = save_uploaded_file(
                         file_input, str(self.file_path), file_name=file_name
                     )
@@ -122,38 +134,3 @@ class DocumentComparisonHandler:
         except Exception as e:
             self.logger.error("Failed to read file %s: %s", file_path, e)
             raise AppException(f"Failed to read file {file_path}: {str(e)}") from e
-
-
-if __name__ == "__main__":
-    import io
-
-    # Mock file object
-    class MockFile:
-        def __init__(self, name, content):
-            self.name = name
-            self.content = content
-
-        def read(self):
-            return self.content
-
-    handler = DocumentComparisonHandler(file_path="data/test_uploads")
-
-    # Test text file
-    txt_content = b"This is a test text file."
-    txt_file = MockFile("test.txt", txt_content)
-
-    # Test JSON file
-    json_content = b'{"key": "value"}'
-    json_file = MockFile("test.json", json_content)
-
-    print("--- Saving Files ---")
-    saved_ref, saved_act = handler.save_file(txt_file, json_file)
-    print(f"Saved reference path: {saved_ref}")
-    print(f"Saved actual path: {saved_act}")
-
-    print("\n--- Reading Files ---")
-    for path in [saved_ref, saved_act]:
-        content = handler.read_file(path)
-        print(f"File: {os.path.basename(path)}")
-        print(f"Content: {content}")
-        print("-" * 20)
