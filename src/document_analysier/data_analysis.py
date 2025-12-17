@@ -8,8 +8,9 @@ from ai_common.model_loader import ModelLoader
 from dotenv import load_dotenv
 from langchain_classic.output_parsers import OutputFixingParser
 from langchain_core.output_parsers import JsonOutputParser
-from prompt.prompt_lib import PROMPT_REGISTRY
+
 from model.models import Metadata
+from prompt.prompt_lib import PROMPT_REGISTRY
 from src.constants import (
     COMPONENT_DOCUMENT_ANALYSIS,
     CONFIG_DIR,
@@ -78,14 +79,16 @@ class DocumentAnalysis:
 
         This method is currently a placeholder for the document analysis logic.
         """
-        self.logger.info('Document analysis started')
+        self.logger.info("Document analysis started")
         try:
             chain = self.document_analysis_prompt | self.llm | self.fixing_parser
             self.logger.info("Document analysis completed successfully")
-            response = chain.invoke({
-                "format_instructions": self.parser.get_format_instructions(),
-                "document_text": document_text
-            })
+            response = chain.invoke(
+                {
+                    "format_instructions": self.parser.get_format_instructions(),
+                    "document_text": document_text,
+                }
+            )
             return response
         except Exception as e:
             self.logger.error("Document analysis failed: %s", str(e))

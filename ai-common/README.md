@@ -144,6 +144,18 @@ except ConfigException as e:
 | `load_config` | `(config_path: str) -> Dict` | Loads a YAML file into a dictionary. Raises `ConfigException` if invalid. |
 | `generate_session_id` | `() -> str` | Generates a unique session identifier string formatted as `session_YYYYMMDD_HHMMSS_<8-char-uuid>`. |
 
+### Generic File Utilities
+
+The `ai_common.file_utils` module provides generic methods for reading and saving files.
+
+#### `read_any_file(file_path: str) -> str`
+Reads the content of various file formats and returns it as a string.
+- **PDFs**: Extracts content page-by-page, prepended with `Page N:`.
+**Supported Formats:** `.pdf`, `.docx`, `.html`, `.xml`, `.json`, `.csv`, `.txt`
+
+#### `save_uploaded_file(file_obj, save_dir: str, file_name: str = None) -> str`
+Saves an uploaded file (bytes or file-like object) to the specified directory. Returns the absolute path of the saved file.
+
 ### 3. Exception Handling (`ai_common.exception`)
 
 **Import:** `from ai_common.exception.custom_exception import ...`
@@ -179,7 +191,9 @@ All exceptions inherit from `AppException` and contain `code`, `message`, and `d
 
 | Version | Date | Changes |
 | :--- | :--- | :--- |
-| **v0.1.5** | *Current* | • Added `ai_common.prompts` with generic templates.<br>• Added `langchain-core` dependency. |
+| **v0.1.7** | *Current* | • Enhanced PDF reading to include page numbering. |
+| **v0.1.6** | *Previous* | • Refactored `DocumentHandler` (fixed shadowing and added `save_file`). |
+| **v0.1.5** | *Previous* | • Added `ai_common.prompts` with generic templates.<br>• Added `langchain-core` dependency. |
 | **v0.1.4** | *Previous* | • Added `generate_session_id` utility to `ai_common.utils` for unique session IDs. |
 | **v0.1.3** | *Previous* | • Refactored `ModelLoader` to use `BaseProvider` pattern for extensibility. |
 | **v0.1.2** | *Previous* | • Added `ai_common.model_loader`.<br>• Introduced `ModelLoader` & `ApiKeyManager`.<br>• Added `ModelException`. |

@@ -2,7 +2,6 @@
 Constants for the Document Portal application.
 """
 
-
 CONFIG_DIR = "config"
 CONFIG_FILE = "config.yaml"
 
@@ -11,10 +10,8 @@ COMPONENT_DOCUMENT_ANALYSIS = "DocumentAnalysis"
 LLM_PROVIDER_GOOGLE = "google"
 MSG_DOC_ANALYSIS_INIT = "DocumentAnalysis initialized"
 ERR_DOC_ANALYSIS_INIT = (
-    "Failed to initialize DocumentAnalysis"
-    "Failed to initialize DocumentAnalysis"
+    "Failed to initialize DocumentAnalysis" "Failed to initialize DocumentAnalysis"
 )
-
 
 
 ENV_DATA_STORAGE_PATH = "DATA_STORAGE_PATH"

@@ -1,11 +1,12 @@
-from src.document_analysier.data_analysis import DocumentAnalysis
-from src.document_analysier.data_ingestion import DocumentHandler
 import os
 import sys
 from pathlib import Path
 
+from src.document_analysier.data_analysis import DocumentAnalysis
+from src.document_analysier.data_ingestion import DocumentHandler
+
 # Ensure project root is in sys.path
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if project_root not in sys.path:
     sys.path.append(project_root)
 
@@ -58,6 +59,7 @@ def main():
     except Exception as e:
         print(f"Test failed with error: {e}")
         import traceback
+
         traceback.print_exc()
 
 

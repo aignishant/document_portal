@@ -125,7 +125,9 @@ class GoogleProvider(BaseProvider):
 class GroqProvider(BaseProvider):
     def load_llm(self, api_key_mgr: ApiKeyManager, config: Dict[str, Any], **kwargs):
         model_name = (
-            kwargs.get("model_name") or config.get("model_name") or "mixtral-8x7b-32768"
+            kwargs.get("model_name")
+            or config.get("model_name")
+            or "llama-3.3-70b-versatile"
         )
         temperature = kwargs.get("temperature", config.get("temperature", 0.5))
 

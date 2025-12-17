@@ -3,6 +3,7 @@ MANIFEST.in
 README.md
 setup.py
 ai_common/__init__.py
+ai_common/file_utils.py
 ai_common/model_loader.py
 ai_common/utils.py
 ai_common/exception/__init__.py

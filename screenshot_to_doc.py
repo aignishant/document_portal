@@ -2,6 +2,7 @@ import os
 import sys
 import tempfile
 import time
+
 from docx import Document
 from docx.shared import Inches
 
@@ -39,7 +40,8 @@ def main():
         while True:
             # Wait for user input to capture
             input(
-                f"\nPress Enter to capture screenshot #{len(doc.inline_shapes) + 1}...")
+                f"\nPress Enter to capture screenshot #{len(doc.inline_shapes) + 1}..."
+            )
 
             # Use a temporary file for the screenshot
             # delete=False is needed because we close it before gnome-screenshot writes to it (os.system)
@@ -53,7 +55,9 @@ def main():
             ret_code = os.system(cmd)
 
             if ret_code != 0:
-                print("Error: Failed to capture screenshot. Is gnome-screenshot installed?")
+                print(
+                    "Error: Failed to capture screenshot. Is gnome-screenshot installed?"
+                )
                 # Clean up if file was created empty or not created
                 if os.path.exists(tmp_img_path):
                     os.remove(tmp_img_path)
@@ -70,10 +74,12 @@ def main():
                 # User usually wants one by one. I'll just append.
                 if len(doc.inline_shapes) > 0:
                     doc.add_paragraph(
-                        f"\nScreenshot captured at {time.strftime('%Y-%m-%d %H:%M:%S')}")
+                        f"\nScreenshot captured at {time.strftime('%Y-%m-%d %H:%M:%S')}"
+                    )
                 else:
                     doc.add_paragraph(
-                        f"Screenshot captured at {time.strftime('%Y-%m-%d %H:%M:%S')}")
+                        f"Screenshot captured at {time.strftime('%Y-%m-%d %H:%M:%S')}"
+                    )
 
                 doc.add_picture(tmp_img_path, width=Inches(6.5))
                 print(f"Screenshot captured and added!")

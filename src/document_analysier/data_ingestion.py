@@ -29,7 +29,6 @@ class DocumentHandler:
     ensuring documents are saved safely and can be read for downstream processing.
     """
 
-
     def __init__(self, data_dir: str = None, session_id: str = None) -> None:
         """
         Initializes the DocumentHandler instance.
@@ -128,7 +127,6 @@ class DocumentHandler:
 
 if __name__ == "__main__":
     from pathlib import Path
-
 
     document_handler = DocumentHandler(session_id="test_session")
 

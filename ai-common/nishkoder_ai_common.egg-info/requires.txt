@@ -3,3 +3,8 @@ langchain-google-genai
 langchain-groq
 python-dotenv
 PyYAML
+pymupdf
+python-docx
+beautifulsoup4
+lxml
+pandas
