@@ -1,11 +1,11 @@
 import os
 import sys
 
-from ai_common.exception.custom_exception import AppException
-from ai_common.logger.custom_logger import get_logger
-from ai_common.logger.logger_utils import add_context
-from ai_common.model_loader import ModelLoader
-from ai_common.utils import generate_session_id
+from rag_common.exception.custom_exception import AppException
+from rag_common.logger.custom_logger import get_logger
+from rag_common.logger.logger_utils import add_context
+from rag_common.model_loader import ModelLoader
+from rag_common.utils import generate_session_id
 from dotenv import load_dotenv
 from langchain_classic.output_parsers import OutputFixingParser
 from langchain_core.output_parsers import JsonOutputParser

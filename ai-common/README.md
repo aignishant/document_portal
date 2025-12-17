@@ -1,8 +1,8 @@
-# ai-common
+# rag-common (formerly ai-common)
 
 **Production-Grade Utilities for AI/ML Applications**
 
-`ai-common` is a comprehensive library designed to standardize logging, exception handling, and configuration management across Python AI projects. It ensures observability, consistency, and reliability.
+`rag-common` (and associated modules) is a comprehensive library designed to standardize logging, exception handling, and configuration management across Python AI projects, specifically tailored for RAG, GenAI, and Agentic workflows.
 
 ---
 
@@ -18,12 +18,24 @@
 | **Generic Prompts** | Pre-built, reusable prompt templates for common tasks (Extraction, Summary, QA). |
 
 
-## 🧠 Model Loader Usage
+## 📦 Modules
 
-`ai-common` now includes a generic `ModelLoader` to simplify initializing Language Models and Embeddings.
+This library now supports multiple AI domains:
+
+- **`rag_common`**: Core utilities for Retrieval-Augmented Generation (Logging, Config, Model Loading, etc.).
+- **`genai_common`**: *[Upcoming]* Utilities specific to Generative AI.
+- **`agentic_common`**: *[Upcoming]* Framework for Agentic AI.
+- **`dl_common`**: *[Upcoming]* Deep Learning shared components.
+- **`ml_common`**: *[Upcoming]* General Machine Learning utilities.
+
+---
+
+## 🧠 Model Loader Usage (`rag_common`)
+
+`rag_common` includes a generic `ModelLoader` to simplify initializing Language Models and Embeddings.
 
 ```python
-from ai_common.model_loader import ModelLoader
+from rag_common.model_loader import ModelLoader
 
 # 1. Initialize Loader
 # Tries to load config from path, or uses defaults/env vars
@@ -43,10 +55,10 @@ embeddings = loader.load_embeddings()
 
 ### Extending Support (Adding Custom Providers)
 
-You can plug in any model provider (e.g., OpenAI, Anthropic, Custom Local Models) by extending `BaseProvider`.
+You can plug in any model provider by extending `BaseProvider`.
 
 ```python
-from ai_common.model_loader import BaseProvider, ApiKeyManager
+from rag_common.model_loader import BaseProvider, ApiKeyManager
 
 class MyCustomProvider(BaseProvider):
     def load_llm(self, api_key_mgr: ApiKeyManager, config: dict, **kwargs):
@@ -73,10 +85,10 @@ llm = loader.load_llm(provider="my_provider")
 
 ## 🎭 Generic Prompts Usage
 
-Acces standard, battle-tested prompts for common GenAI tasks.
+Access standard, battle-tested prompts for common GenAI tasks.
 
 ```python
-from ai_common.prompts import get_generic_prompt
+from rag_common.prompts import get_generic_prompt
 
 # 1. Get a specific prompt by name
 # Available: "json_extraction", "summary", "rag_qa", "query_rewrite", "classification"
@@ -103,7 +115,7 @@ pip install nishkoder-ai-common
 
 ### Logging
 ```python
-from ai_common.logger.custom_logger import logger
+from rag_common.logger.custom_logger import logger
 
 # Basic Info Log
 logger.info("Application started", extra={"env": "production"})
@@ -111,8 +123,8 @@ logger.info("Application started", extra={"env": "production"})
 
 ### Configuration
 ```python
-from ai_common.utils import load_config
-from ai_common.exception.custom_exception import ConfigException
+from rag_common.utils import load_config
+from rag_common.exception.custom_exception import ConfigException
 
 try:
     config = load_config("config.yaml")
@@ -125,9 +137,9 @@ except ConfigException as e:
 
 ## 📚 API Reference
 
-### 1. Logging Module (`ai_common.logger`)
+### 1. Logging Module (`rag_common.logger`)
 
-**Import:** `from ai_common.logger import ...`
+**Import:** `from rag_common.logger import ...`
 
 | Component | Type | Signature | Description |
 | :--- | :--- | :--- | :--- |
@@ -135,9 +147,9 @@ except ConfigException as e:
 | `get_logger` | `Function` | `(name="app") -> Logger` | Factory to create a new logger instance with JSON formatting. |
 | `add_context` | `Function` | `(logger, **kwargs) -> LoggerAdapter` | Wraps a logger to inject context (e.g., `request_id`) into every log message. |
 
-### 2. Utilities Module (`ai_common`)
+### 2. Utilities Module (`rag_common`)
 
-**Import:** `from ai_common.utils import ...`
+**Import:** `from rag_common.utils import ...`
 
 | Function | Signature | Description |
 | :--- | :--- | :--- |
@@ -146,7 +158,7 @@ except ConfigException as e:
 
 ### Generic File Utilities
 
-The `ai_common.file_utils` module provides generic methods for reading and saving files.
+The `rag_common.file_utils` module provides generic methods for reading and saving files.
 
 #### `read_any_file(file_path: str) -> str`
 Reads the content of various file formats and returns it as a string.
@@ -156,9 +168,9 @@ Reads the content of various file formats and returns it as a string.
 #### `save_uploaded_file(file_obj, save_dir: str, file_name: str = None) -> str`
 Saves an uploaded file (bytes or file-like object) to the specified directory. Returns the absolute path of the saved file.
 
-### 3. Exception Handling (`ai_common.exception`)
+### 3. Exception Handling (`rag_common.exception`)
 
-**Import:** `from ai_common.exception.custom_exception import ...`
+**Import:** `from rag_common.exception.custom_exception import ...`
 
 All exceptions inherit from `AppException` and contain `code`, `message`, and `details`.
 
@@ -177,9 +189,9 @@ All exceptions inherit from `AppException` and contain `code`, `message`, and `d
 | `DatabaseException` | `500` | `DATABASE_ERROR` | Wrapper for DB connectivity or query errors. |
 | `ConfigException` | `500` | `CONFIGURATION_ERROR` | Errors related to loading or parsing configuration files. |
 
-### 4. Generic Prompts (`ai_common.prompts`)
+### 4. Generic Prompts (`rag_common.prompts`)
 
-**Import:** `from ai_common.prompts import ...`
+**Import:** `from rag_common.prompts import ...`
 
 | Function | Description |
 | :--- | :--- |
@@ -191,7 +203,8 @@ All exceptions inherit from `AppException` and contain `code`, `message`, and `d
 
 | Version | Date | Changes |
 | :--- | :--- | :--- |
-| **v0.1.7** | *Current* | • Enhanced PDF reading to include page numbering. |
+| **v0.1.8** | *Current* | • Restructured library. Renamed `ai_common` to `rag_common`.<br>• Added placeholders for `genai_common`, `agentic_common`, `dl_common`, `ml_common`. |
+| **v0.1.7** | *Previous* | • Enhanced PDF reading to include page numbering. |
 | **v0.1.6** | *Previous* | • Refactored `DocumentHandler` (fixed shadowing and added `save_file`). |
 | **v0.1.5** | *Previous* | • Added `ai_common.prompts` with generic templates.<br>• Added `langchain-core` dependency. |
 | **v0.1.4** | *Previous* | • Added `generate_session_id` utility to `ai_common.utils` for unique session IDs. |

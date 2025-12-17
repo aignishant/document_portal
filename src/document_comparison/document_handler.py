@@ -1,12 +1,12 @@
 import os
 from pathlib import Path
-from typing import BinaryIO, List, Union
+from typing import BinaryIO, List, Tuple, Union
 
-from ai_common.exception.custom_exception import AppException
-from ai_common.file_utils import read_any_file, save_uploaded_file
-from ai_common.logger.custom_logger import get_logger
-from ai_common.logger.logger_utils import add_context
-from ai_common.utils import generate_session_id
+from rag_common.exception.custom_exception import AppException
+from rag_common.file_utils import read_any_file, save_uploaded_file
+from rag_common.logger.custom_logger import get_logger
+from rag_common.logger.logger_utils import add_context
+from rag_common.utils import generate_session_id
 
 from src.constants import ERR_DOC_HANDLER_INIT
 
@@ -36,7 +36,7 @@ class DocumentComparisonHandler:
             self.logger.error("%s: %s", ERR_DOC_HANDLER_INIT, e)
             raise AppException(f"{ERR_DOC_HANDLER_INIT}: {str(e)}") from e
 
-    def delete_existing_files(self, file_paths: list[str]):
+    def delete_existing_files(self):
         """
         Deletes the specified list of files from the filesystem.
 
@@ -44,76 +44,68 @@ class DocumentComparisonHandler:
             file_paths (list[str]): A list of file paths to be deleted.
         """
         try:
-            for file_path in file_paths:
-                if os.path.exists(file_path):
-                    os.remove(file_path)
-            self.logger.info("Deleted existing files: %s", file_paths)
+            if self.file_path.exists() and self.file_path.is_dir():
+                for file in self.file_path.iterdir():
+                    if file.is_file():
+                        file.unlink()
+                        self.logger.info("Deleted file: %s", file)
+                self.logger.info("Deleted existing files successfully")
+            else:
+                self.logger.info("No existing files found")
         except Exception as e:
             self.logger.error("Failed to delete existing files: %s", e)
             raise AppException(f"Failed to delete existing files: {str(e)}") from e
 
-    def save_uploaded_files(
-        self, uploaded_files: List[Union[BinaryIO, bytes]]
-    ) -> List[str]:
+    def save_file(
+        self,
+        reference_file: Union[str, BinaryIO, bytes],
+        actual_file: Union[str, BinaryIO, bytes],
+        reference_file_name: str = None,
+        actual_file_name: str = None
+    ) -> Tuple[str, str]:
         """
-        Saves uploaded files to the configured file path directory.
+        Saves both reference and actual files to the managed directory.
 
         Args:
-            uploaded_files: List of file objects or bytes to save.
+            reference_file: Reference file path (str), file object, or bytes.
+            actual_file: Actual file path (str), file object, or bytes.
+            reference_file_name: Optional name for reference file.
+            actual_file_name: Optional name for actual file.
 
         Returns:
-            List[str]: List of saved file absolute paths.
-        """
-        saved_paths = []
-        try:
-            for file_obj in uploaded_files:
-                saved_file_path = save_uploaded_file(file_obj, str(self.file_path))
-                saved_paths.append(saved_file_path)
-            self.logger.info("Saved %s uploaded files", len(saved_paths))
-            return saved_paths
-
-        except Exception as e:
-            self.logger.error("Failed to save uploaded files: %s", e)
-            # Cleanup already saved files?? For now just raise
-            raise AppException(f"Failed to save uploaded files: {str(e)}") from e
-
-    def save_file(self, file_input: Union[str, BinaryIO, bytes], file_name: str = None) -> str:
-        """
-        Saves a single file to the managed directory.
-
-        Args:
-            file_input: File path (str), file object, or bytes.
-            file_name: Optional file name. Required if valid name cannot be derived from input.
-
-        Returns:
-            str: Path to the saved file.
+            Tuple[str, str]: Tuple containing (reference_file_path, actual_file_path).
         """
         try:
-            if isinstance(file_input, str):
-                if not os.path.exists(file_input):
-                    raise FileNotFoundError(f"Source file not found: {file_input}")
+            saved_paths = []
+            self.delete_existing_files()
+            reference_file = self.file_path / reference_file.name
+            actual_file = self.file_path / actual_file.name
+            for file_input, file_name in [(reference_file, reference_file_name), (actual_file, actual_file_name)]:
+                if isinstance(file_input, str):
+                    if not os.path.exists(file_input):
+                        raise FileNotFoundError(f"Source file not found: {file_input}")
 
-                # Derive name if not provided
-                if not file_name:
-                    file_name = os.path.basename(file_input)
+                    if not file_name:
+                        file_name = os.path.basename(file_input)
 
-                with open(file_input, "rb") as f:
-                    file_content = f.read()
+                    with open(file_input, "rb") as f:
+                        file_content = f.read()
 
-                saved_path = save_uploaded_file(
-                    file_content, str(self.file_path), file_name=file_name)
+                    saved_path = save_uploaded_file(
+                        file_content, str(self.file_path), file_name=file_name)
 
-            else:
-                saved_path = save_uploaded_file(
-                    file_input, str(self.file_path), file_name=file_name
-                )
+                else:
+                    saved_path = save_uploaded_file(
+                        file_input, str(self.file_path), file_name=file_name
+                    )
+                saved_paths.append(saved_path)
 
-            self.logger.info("Saved file: %s", saved_path)
-            return saved_path
+            self.logger.info("Saved files: %s", saved_paths)
+            return tuple(saved_paths)
 
         except Exception as e:
-            self.logger.error("Failed to save file: %s", e)
-            raise AppException(f"Failed to save file: {str(e)}") from e
+            self.logger.error("Failed to save files: %s", e)
+            raise AppException(f"Failed to save files: {str(e)}") from e
 
     def read_file(self, file_path: str) -> str:
         """
@@ -155,11 +147,12 @@ if __name__ == "__main__":
     json_file = MockFile("test.json", json_content)
 
     print("--- Saving Files ---")
-    uploaded_file_paths = handler.save_uploaded_files([txt_file, json_file])
-    print(f"Saved paths: {uploaded_file_paths}")
+    saved_ref, saved_act = handler.save_file(txt_file, json_file)
+    print(f"Saved reference path: {saved_ref}")
+    print(f"Saved actual path: {saved_act}")
 
     print("\n--- Reading Files ---")
-    for path in uploaded_file_paths:
+    for path in [saved_ref, saved_act]:
         content = handler.read_file(path)
         print(f"File: {os.path.basename(path)}")
         print(f"Content: {content}")

@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="nishkoder-ai-common",
-    version="0.1.7",
+    version="0.1.8",
     author="nishkoder",
     description="Common utilities for AI projects including logging and exceptions",
     long_description=long_description,
