@@ -57,7 +57,9 @@ class TestDocumentComparisonHandler(BaseTestCase):
 
         doc_handler.delete_existing_files()
 
-        assert len(list(temp_doc_dir.iterdir())) == 3    def test_save_file_path_input(self, doc_handler, temp_doc_dir, tmp_path):
+        assert len(list(temp_doc_dir.iterdir())) == 3
+
+    def test_save_file_path_input(self, doc_handler, temp_doc_dir, tmp_path):
 
         source_ref = tmp_path / "source_ref.txt"
 
