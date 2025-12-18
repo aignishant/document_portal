@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from rag_common.exception.custom_exception import AppException
+from AIFoundationKit.base.exception.custom_exception import AppException
 from src.document_comparison.document_handler import DocumentComparisonHandler
 
 
@@ -128,21 +128,29 @@ def test_save_file_not_found(doc_handler):
     assert "Source file not found" in str(excinfo.value)
 
 
-@patch("src.document_comparison.document_handler.read_any_file")
-def test_read_file_success(mock_read_any_file, doc_handler):
+@patch("src.document_comparison.document_handler.BaseFileManager")
+def test_read_file_success(mock_file_manager_cls, doc_handler):
     """Test successfully reading a file."""
-    mock_read_any_file.return_value = "file content"
+    # Setup mock instance
+    mock_instance = mock_file_manager_cls.return_value
+    mock_instance.read_file.return_value = "file content"
+
+    # Re-initialize doc_handler to pick up the mock (or patch where it's used)
+    # Since doc_handler fixture creates instance before patch, we need to patch BEFORE instance creation
+    # OR simpler: just mock the attribute on the existing instance
+    doc_handler.file_manager = MagicMock()
+    doc_handler.file_manager.read_file.return_value = "file content"
 
     content = doc_handler.read_file("some/path/file.txt")
 
     assert content == "file content"
-    mock_read_any_file.assert_called_once_with("some/path/file.txt")
+    doc_handler.file_manager.read_file.assert_called_once_with("some/path/file.txt")
 
 
-@patch("src.document_comparison.document_handler.read_any_file")
-def test_read_file_failure(mock_read_any_file, doc_handler):
+def test_read_file_failure(doc_handler):
     """Test failure during file read."""
-    mock_read_any_file.side_effect = Exception("Read error")
+    doc_handler.file_manager = MagicMock()
+    doc_handler.file_manager.read_file.side_effect = Exception("Read error")
 
     with pytest.raises(AppException) as excinfo:
         doc_handler.read_file("some/path/file.txt")

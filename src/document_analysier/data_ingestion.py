@@ -1,10 +1,10 @@
 import os
 
 import fitz
-from rag_common.exception.custom_exception import AppException
-from rag_common.logger.custom_logger import get_logger
-from rag_common.logger.logger_utils import add_context
-from rag_common.utils import generate_session_id
+from AIFoundationKit.base.exception.custom_exception import AppException
+from AIFoundationKit.base.logger.custom_logger import get_logger
+from AIFoundationKit.base.logger.logger_utils import add_context
+from AIFoundationKit.base.utils import generate_session_id
 
 from src.constants import (
     DIR_DATA,

@@ -1,3 +1,33 @@
+Metadata-Version: 2.4
+Name: ai-foundation-kit
+Version: 0.1.10
+Summary: Common utilities for AI projects including logging and exceptions
+Author: nishkoder
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: langchain-core
+Requires-Dist: langchain-google-genai
+Requires-Dist: langchain-groq
+Requires-Dist: python-dotenv
+Requires-Dist: PyYAML
+Requires-Dist: pymupdf
+Requires-Dist: python-docx
+Requires-Dist: beautifulsoup4
+Requires-Dist: lxml
+Requires-Dist: pandas
+Dynamic: author
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
 # 🏗️ AI Foundation Kit
 
 **The Professional / Development-First Standard for AI/ML Applications**

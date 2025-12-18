@@ -4,8 +4,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="nishkoder-ai-common",
-    version="0.1.8",
+    name="ai-foundation-kit",
+    version="0.1.10",
     author="nishkoder",
     description="Common utilities for AI projects including logging and exceptions",
     long_description=long_description,
