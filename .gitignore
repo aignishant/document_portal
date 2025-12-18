@@ -11,5 +11,5 @@ pipeline_log.txt
 format_code.sh
 extra_requirements.txt
 extras/
-git_push.sh
 PIPELINE_SCENARIOS.md
+

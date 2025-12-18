@@ -14,24 +14,16 @@ log_message() {
     echo "$1" | tee -a "$LOG_FILE"
 }
 
-# 1. Format Code
-log_message "--- Step 1: Formatting Code ---"
+# 1. Format Code (Includes Linting and Testing via format_code.sh which uses myvenv)
+log_message "--- Step 1: Formatting and Testing ---"
 if ./format_code.sh >> "$LOG_FILE" 2>&1; then
-    log_message "✅ Formatting Passed"
+    log_message "✅ Formatting and Tests Passed"
 else
-    log_and_exit "Formatting Check Failed. See $LOG_FILE for details."
+    log_and_exit "Formatting/Testing Failed. See $LOG_FILE for details."
 fi
 
-# 2. Run Tests
-log_message "--- Step 2: Running Tests ---"
-if pytest >> "$LOG_FILE" 2>&1; then
-    log_message "✅ Tests Passed"
-else
-    log_and_exit "Tests Failed. See $LOG_FILE for details."
-fi
-
-# 3. Git Push
-log_message "--- Step 3: Git Push ---"
+# 2. Git Push
+log_message "--- Step 2: Git Push ---"
 git add . >> "$LOG_FILE" 2>&1
 # Check if there are changes to commit
 if git diff-index --quiet HEAD --; then
@@ -45,7 +37,6 @@ else
 fi
 
 # Use GITHUB_TOKEN if available, otherwise fallback to standard push
-REMOTE_URL="https://github.com/aignishant/document_portal.git"
 if [ -n "$GITHUB_TOKEN" ]; then
     # Mask token in logs
     log_message "Using GITHUB_TOKEN for authentication."
