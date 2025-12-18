@@ -1,4 +1,4 @@
-=== Pipeline Started at Thu Dec 18 02:24:12 PM IST 2025 ===
+=== Pipeline Started at Thu Dec 18 02:24:37 PM IST 2025 ===
 --- Step 1: Formatting Code ---
 Running Black on ....
 Skipping .ipynb files as Jupyter dependencies are not installed.
@@ -21,7 +21,7 @@ tests/test_custom_logger.py .                                            [ 26%]
 tests/test_document_comparison_handler.py .........                      [ 73%]
 tests/test_document_handler.py .....                                     [100%]
 
-============================== 19 passed in 2.92s ==============================
+============================== 19 passed in 3.70s ==============================
 All checks and formatting completed successfully!
 ✅ Formatting Passed
 --- Step 2: Running Tests ---
@@ -37,6 +37,6 @@ tests/test_custom_logger.py .                                            [ 26%]
 tests/test_document_comparison_handler.py .........                      [ 73%]
 tests/test_document_handler.py .....                                     [100%]
 
-============================== 19 passed in 2.60s ==============================
+============================== 19 passed in 3.49s ==============================
 ✅ Tests Passed
 --- Step 3: Git Push ---
