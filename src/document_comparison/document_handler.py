@@ -17,7 +17,9 @@ class DocumentComparisonHandler:
     and retrieval.
     """
 
-    def __init__(self, session_id: str = None, file_path: str = None):
+    def __init__(
+        self, session_id: str = None, file_path: str = "data/document_compare"
+    ):
         """
         Initializes the DocumentComparisonHandler.
 
@@ -118,51 +120,51 @@ class DocumentComparisonHandler:
         """
 
         try:
-
-            saved_paths = []
-
             self.delete_existing_files()
 
-            for file_input, file_name in [
-                (reference_file, reference_file_name),
-                (actual_file, actual_file_name),
-            ]:
+            saved_ref_path = self._process_and_save(reference_file, reference_file_name)
+            saved_act_path = self._process_and_save(actual_file, actual_file_name)
 
-                if isinstance(file_input, str):
+            self.logger.info("Saved files: %s, %s", saved_ref_path, saved_act_path)
 
-                    if not os.path.exists(file_input):
-
-                        raise FileNotFoundError(f"Source file not found: {file_input}")
-
-                    if not file_name:
-
-                        file_name = os.path.basename(file_input)
-
-                    with open(file_input, "rb") as f:
-
-                        file_content = f.read()
-
-                    saved_path = self.file_manager.save_file(
-                        file_content, str(self.file_path), file_name=file_name
-                    )
-
-                else:
-
-                    saved_path = self.file_manager.save_file(
-                        file_input, str(self.file_path), file_name=file_name
-                    )
-
-                saved_paths.append(saved_path)
-
-            self.logger.info("Saved files: %s", saved_paths)
-
-            return tuple(saved_paths)
+            return saved_ref_path, saved_act_path
 
         except Exception as e:
-
             self.logger.error("Failed to save files: %s", e)
-
             raise AppException(f"Failed to save files: {str(e)}") from e
+
+    def _process_and_save(
+        self, file_input: Union[str, BinaryIO, bytes], file_name: str = None
+    ) -> str:
+        """
+        Helper method to process and save a single file.
+
+        Args:
+            file_input (Union[str, BinaryIO, bytes]): The file content or path.
+            file_name (str, optional): Name for the file.
+
+        Returns:
+            str: Path where the file was saved.
+        """
+        if isinstance(file_input, str):
+            if not os.path.exists(file_input):
+                raise FileNotFoundError(f"Source file not found: {file_input}")
+
+            if not file_name:
+                file_name = os.path.basename(file_input)
+
+            with open(file_input, "rb") as f:
+                file_content = f.read()
+
+            saved_path = self.file_manager.save_file(
+                file_content, str(self.file_path), file_name=file_name
+            )
+            return str(saved_path)
+
+        saved_path = self.file_manager.save_file(
+            file_input, str(self.file_path), file_name=file_name
+        )
+        return str(saved_path)
 
     def read_file(self, file_path: str) -> str:
         """
