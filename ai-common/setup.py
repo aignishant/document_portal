@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setup(
     name="ai-foundation-kit",
     version="0.1.0",
-    author="nishkoder",
+    author="aignishant",
     description="Common utilities for AI projects including logging and exceptions",
     long_description=long_description,
     long_description_content_type="text/markdown",
