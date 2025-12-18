@@ -1,0 +1,42 @@
+=== Pipeline Started at Thu Dec 18 02:24:12 PM IST 2025 ===
+--- Step 1: Formatting Code ---
+Running Black on ....
+Skipping .ipynb files as Jupyter dependencies are not installed.
+You can fix this by running ``pip install "black[jupyter]"``
+All done! ✨ 🍰 ✨
+36 files left unchanged.
+Running Isort on ....
+Skipped 3 files
+Running Linter (Flake8) on ....
+Running Tests...
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.2, pluggy-1.6.0
+rootdir: /home/aignishant/Documents/genaiproject/dp/document_portal
+configfile: pyproject.toml
+plugins: langsmith-0.5.0, anyio-4.12.0
+collected 19 items
+
+tests/test_custom_exception.py ....                                      [ 21%]
+tests/test_custom_logger.py .                                            [ 26%]
+tests/test_document_comparison_handler.py .........                      [ 73%]
+tests/test_document_handler.py .....                                     [100%]
+
+============================== 19 passed in 2.92s ==============================
+All checks and formatting completed successfully!
+✅ Formatting Passed
+--- Step 2: Running Tests ---
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.2, pluggy-1.6.0
+rootdir: /home/aignishant/Documents/genaiproject/dp/document_portal
+configfile: pyproject.toml
+plugins: langsmith-0.5.0, anyio-4.12.0
+collected 19 items
+
+tests/test_custom_exception.py ....                                      [ 21%]
+tests/test_custom_logger.py .                                            [ 26%]
+tests/test_document_comparison_handler.py .........                      [ 73%]
+tests/test_document_handler.py .....                                     [100%]
+
+============================== 19 passed in 2.60s ==============================
+✅ Tests Passed
+--- Step 3: Git Push ---
