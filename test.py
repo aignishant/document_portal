@@ -78,9 +78,10 @@ def test_compare_docuemnts():
 
     comparator.save_file(ref_upload, act_upload)
     combined_text = comparator.combine_files()
+    comparator.clean_old_session(keep_latest=3)
 
-    print("\n Combined Text Preview (First 1000 chars):\n")
-    print(combined_text[:1000])
+    print("\n Combined Text Preview (First 1500 chars):\n")
+    print(combined_text[:1500])
 
     llm_comparator = DocumentComparisonWithLLM()
     comparison_df = llm_comparator.compare_documents(combined_text)

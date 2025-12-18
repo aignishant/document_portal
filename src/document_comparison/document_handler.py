@@ -36,6 +36,11 @@ class DocumentComparisonHandler:
 
             self.session_id = session_id or generate_session_id()
 
+            self.logger.info(
+                "Document comparison handler initialized with session ID: %s",
+                self.session_id,
+            )
+
             self.logger = add_context(self.logger, session_id=self.session_id)
 
             self.file_manager = BaseFileManager()
@@ -43,17 +48,16 @@ class DocumentComparisonHandler:
             project_root = Path(__file__).resolve().parent.parent.parent
 
             if file_path:
-
-                self.file_path = Path(file_path)
-
-                if not self.file_path.is_absolute():
-
-                    self.file_path = project_root / self.file_path
-
+                path_obj = Path(file_path)
+                if not path_obj.is_absolute():
+                    base_dir = project_root / path_obj
+                else:
+                    base_dir = path_obj
             else:
+                base_dir = project_root / "data"
 
-                self.file_path = project_root / "data"
-
+            # Set file_path to the session directory
+            self.file_path = base_dir / self.session_id
             self.file_path.mkdir(parents=True, exist_ok=True)
 
             self.logger.info(
@@ -223,6 +227,29 @@ class DocumentComparisonHandler:
             self.logger.error("Failed to combine files: %s", e)
 
             raise AppException(f"Failed to combine files: {str(e)}") from e
+
+    def clean_old_session(self, keep_latest: int = 3):
+        """
+        Cleans up old sessions by removing all but the latest N sessions.
+
+        Args:
+            keep_latest (int, optional): Number of latest sessions to keep.
+            Defaults to 3.
+        """
+        try:
+            # self.file_path is the session folder, so we check its parent for other sessions
+            session_folders = sorted(
+                [folder for folder in self.file_path.parent.iterdir() if folder.is_dir()],
+                reverse=True,
+            )
+            for folder in session_folders[keep_latest:]:
+                for file in folder.iterdir():
+                    file.unlink()
+                folder.rmdir()
+                self.logger.info("Removed old session: %s", folder)
+        except Exception as e:
+            self.logger.error("Failed to clean old sessions: %s", e)
+            raise AppException(f"Failed to clean old sessions: {str(e)}") from e
 
 
 def main():

@@ -53,11 +53,11 @@ class TestDocumentComparisonHandler(BaseTestCase):
 
         (temp_doc_dir / "file2.pdf").write_bytes(b"content2")
 
-        assert len(list(temp_doc_dir.iterdir())) == 2
+        assert len(list(temp_doc_dir.iterdir())) == 3
 
         doc_handler.delete_existing_files()
 
-        assert len(list(temp_doc_dir.iterdir())) == 0
+        assert len(list(temp_doc_dir.iterdir())) == 1
 
     def test_save_file_path_input(self, doc_handler, temp_doc_dir, tmp_path):
 

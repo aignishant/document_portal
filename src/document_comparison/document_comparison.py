@@ -39,7 +39,7 @@ class DocumentComparisonWithLLM:
 
         self.prompt = PROMPT_REGISTRY.get("document_comparison")
 
-        self.output_parser = JsonOutputParser(pydantic_object=SummaryResponse)
+        self.output_parser = JsonOutputParser()
 
         self.parser = OutputFixingParser.from_llm(
             llm=self.llm,
