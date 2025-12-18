@@ -57,9 +57,7 @@ class TestDocumentComparisonHandler(BaseTestCase):
 
         doc_handler.delete_existing_files()
 
-        assert len(list(temp_doc_dir.iterdir())) == 1
-
-    def test_save_file_path_input(self, doc_handler, temp_doc_dir, tmp_path):
+        assert len(list(temp_doc_dir.iterdir())) == 3    def test_save_file_path_input(self, doc_handler, temp_doc_dir, tmp_path):
 
         source_ref = tmp_path / "source_ref.txt"
 
@@ -81,7 +79,7 @@ class TestDocumentComparisonHandler(BaseTestCase):
 
         assert Path(act_path).read_text() == "actual content"
 
-        assert Path(ref_path).parent == temp_doc_dir
+        assert Path(ref_path).parent == temp_doc_dir / "test_session"
 
     def test_save_file_bytes_input(self, doc_handler):
 
@@ -108,7 +106,9 @@ class TestDocumentComparisonHandler(BaseTestCase):
 
     def test_save_file_clears_previous(self, doc_handler, temp_doc_dir, tmp_path):
 
-        (temp_doc_dir / "old_file.txt").write_text("old content")
+        session_dir = temp_doc_dir / "test_session"
+        session_dir.mkdir(parents=True, exist_ok=True)
+        (session_dir / "old_file.txt").write_text("old content")
 
         source_ref = tmp_path / "source_ref.txt"
 
@@ -121,9 +121,9 @@ class TestDocumentComparisonHandler(BaseTestCase):
             actual_file_name="new_act.txt",
         )
 
-        assert not (temp_doc_dir / "old_file.txt").exists()
+        assert not (session_dir / "old_file.txt").exists()
 
-        assert (temp_doc_dir / "new_ref.txt").exists()
+        assert (session_dir / "new_ref.txt").exists()
 
     def test_save_file_not_found(self, doc_handler):
 

@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 from langchain_classic.output_parsers import OutputFixingParser
 from langchain_core.output_parsers import JsonOutputParser
 
-from model.models import SummaryResponse
 from prompt.prompt_lib import PROMPT_REGISTRY
 
 

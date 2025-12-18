@@ -237,9 +237,14 @@ class DocumentComparisonHandler:
             Defaults to 3.
         """
         try:
-            # self.file_path is the session folder, so we check its parent for other sessions
+            # self.file_path is the session folder,
+            # so we check its parent for other sessions
             session_folders = sorted(
-                [folder for folder in self.file_path.parent.iterdir() if folder.is_dir()],
+                [
+                    folder
+                    for folder in self.file_path.parent.iterdir()
+                    if folder.is_dir()
+                ],
                 reverse=True,
             )
             for folder in session_folders[keep_latest:]:
