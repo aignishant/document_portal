@@ -5,3 +5,10 @@ myvenv
 .venv
 DOCUMENT_PORTAL.egg-info/
 test_logs
+run_pipeline_strict.sh
+run_pipeline_lenient.sh
+pipeline_log.txt
+format_code.sh
+extra_requirements.txt
+extras/
+

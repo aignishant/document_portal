@@ -40,3 +40,12 @@ tests/test_document_handler.py .....                                     [100%]
 ============================== 19 passed in 3.49s ==============================
 ✅ Tests Passed
 --- Step 3: Git Push ---
+[main 3dadcea] chore: Automated pipeline commit
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+✅ Changes Committed
+Using GITHUB_TOKEN for authentication.
+To https://github.com/aignishant/document_portal.git
+   02b5159..3dadcea  main -> main
+✅ Changes Pushed to Remote
+=== Pipeline Completed Successfully at Thu Dec 18 02:24:51 PM IST 2025 ===
+All checks passed and changes pushed.
