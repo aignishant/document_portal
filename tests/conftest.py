@@ -1,9 +1,11 @@
-from src.constants import ENV_DATA_STORAGE_PATH
-import pytest
-import fitz
 import os
 import sys
 from pathlib import Path
+
+import fitz
+import pytest
+
+from src.constants import ENV_DATA_STORAGE_PATH
 
 # Add project root to sys.path before importing from src
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
