@@ -1,3 +1,4 @@
+import pandas as pd
 from AIFoundationKit.base.exception.custom_exception import AppException
 from AIFoundationKit.base.logger.custom_logger import get_logger
 from AIFoundationKit.base.logger.logger_utils import add_context
@@ -12,8 +13,19 @@ from prompt.prompt_lib import PROMPT_REGISTRY
 
 
 class DocumentComparisonWithLLM:
+    """
+    A class for comparing two documents using a Large Language Model (LLM).
+
+    This class handles the initialization of the LLM, prompt templates,
+    and output parsers required for structural comparison of document content.
+    """
 
     def __init__(self):
+        """
+        Initializes the DocumentComparisonWithLLM class.
+
+        Sets up the environment, logger, LLM loader, prompts, and output parsing chain.
+        """
 
         load_dotenv()
 
@@ -38,11 +50,22 @@ class DocumentComparisonWithLLM:
 
         self.logger.info("Document comparison with LLM initialized successfully")
 
-    def compare_documents(self, doc1_text: str, doc2_text: str):
+    def compare_documents(self, combined_docs: str):
+        """
+        Compares two provided document texts using the configured LLM chain.
+
+        Args:
+            doc1_text (str): The text content of the first document.
+            doc2_text (str): The text content of the second document.
+
+        Returns:
+            dict: The structural comparison result from the LLM.
+
+        Raises:
+            AppException: If the comparison process fails.
+        """
 
         try:
-
-            combined_docs = f"Document 1:\n{doc1_text}\n\nDocument 2:\n{doc2_text}"
 
             response = self.chain.invoke(
                 {
@@ -53,7 +76,7 @@ class DocumentComparisonWithLLM:
 
             self.logger.info("Documents compared successfully")
 
-            return response
+            return self._format_response(response)
 
         except Exception as e:
 
@@ -61,11 +84,27 @@ class DocumentComparisonWithLLM:
 
             raise AppException(f"Failed to compare documents: {str(e)}") from e
 
-    def _format_response(self, response: dict) -> dict:
+    def _format_response(self, response: list[dict]) -> pd.DataFrame:
+        """
+        Formats the LLM response. Currently returns the response as is.
+
+        Args:
+            response (dict): The raw response dictionary from the LLM.
+
+        Returns:
+            dict: The formatted response dictionary.
+
+        Raises:
+            AppException: If formatting fails.
+        """
 
         try:
 
-            return response
+            df = pd.DataFrame(response)
+
+            self.logger.info("Response formatted successfully %s", df)
+
+            return df
 
         except Exception as e:
 
@@ -74,22 +113,28 @@ class DocumentComparisonWithLLM:
             raise AppException(f"Failed to format response: {str(e)}") from e
 
 
-if __name__ == "__main__":
-
+def main():
+    """
+    Main entry point for testing document comparison.
+    """
     document_comparison = DocumentComparisonWithLLM()
 
     doc1 = """
-    Page 1:
     Project Alpha is expected to launch in Q3.
     Budget is set at $50,000.
     """
 
     doc2 = """
-    Page 1:
     Project Alpha is expected to launch in Q4.
     Budget is set at $60,000.
     """
 
-    result = document_comparison.compare_documents(doc1, doc2)
+    combined_docs = f"Document 1:\n{doc1}\n\nDocument 2:\n{doc2}"
+
+    result = document_comparison.compare_documents(combined_docs)
 
     print(result)
+
+
+if __name__ == "__main__":
+    main()
