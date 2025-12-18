@@ -1,10 +1,8 @@
-#!/bin/bash
+
 set -e
 
-# Get the directory where the script is located
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
-# Run from the project root
 cd "$SCRIPT_DIR"
 
 TARGET="${1:-.}"

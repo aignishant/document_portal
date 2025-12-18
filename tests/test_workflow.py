@@ -1,70 +1,78 @@
 import os
-import sys
-from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 from src.document_analysier.data_analysis import DocumentAnalysis
 from src.document_analysier.data_ingestion import DocumentHandler
-
-# Ensure project root is in sys.path
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-if project_root not in sys.path:
-    sys.path.append(project_root)
+from tests.base import BaseTestCase
 
 
-# Path to the PDF you want to test
-PDF_PATH = (
-    "/home/aignishant/Documents/genaiproject/dp/document_portal/"
-    "data/document_analysis/NIPS-2017-attention-is-all-you-need-Paper.pdf"
-)
+class TestWorkflow(BaseTestCase):
 
+    @patch("src.document_analysier.data_analysis.load_dotenv")
+    @patch("src.document_analysier.data_analysis.ModelLoader")
+    @patch("src.document_analysier.data_analysis.JsonOutputParser")
+    @patch("src.document_analysier.data_analysis.OutputFixingParser")
+    @patch("src.document_analysier.data_analysis.PROMPT_REGISTRY")
+    def test_workflow_ingestion_and_analysis_success(
+        self,
+        mock_registry,
+        mock_fixing_parser,
+        mock_json_parser,
+        mock_model_loader,
+        mock_load_dotenv,
+        temp_data_dir,
+        sample_pdf,
+        dummy_file_class,
+    ):
 
-class DummyFile:
-    def __init__(self, file_path):
-        self.name = Path(file_path).name
-        self.path = file_path  # Required by DocumentHandler.save_pdf
-        self._file_path = file_path
+        mock_llm = MagicMock()
 
-    def getbuffer(self):
-        with open(self._file_path, "rb") as f:
-            return f.read()
+        mock_model_loader.return_value.load_llm.return_value = mock_llm
 
+        mock_prompt_template = MagicMock()
 
-def main():
-    try:
-        # ---------- STEP 1: DATA INGESTION ----------
-        print("Starting PDF ingestion...")
+        mock_registry.__getitem__.return_value = mock_prompt_template
 
-        # Verify if file exists before proceeding
-        if not os.path.exists(PDF_PATH):
-            print(f"Error: Test file not found at {PDF_PATH}")
-            return
+        mock_intermediate_chain = MagicMock()
 
-        dummy_pdf = DummyFile(PDF_PATH)
+        mock_final_chain = MagicMock()
 
-        handler = DocumentHandler(session_id="test_ingestion_analysis")
+        mock_prompt_template.__or__.return_value = mock_intermediate_chain
 
-        saved_path = handler.save_pdf(dummy_pdf)
-        print(f"PDF saved at: {saved_path}")
+        mock_intermediate_chain.__or__.return_value = mock_final_chain
 
-        # Read PDF content
+        expected_result = {
+            "title": "Attention Is All You Need",
+            "authors": ["Vaswani et al."],
+            "summary": "Transformers are great.",
+        }
+
+        mock_final_chain.invoke.return_value = expected_result
+
+        session_id = "test_workflow_session"
+
+        handler = DocumentHandler(session_id=session_id)
+
+        dummy_file = dummy_file_class(sample_pdf)
+
+        saved_path = handler.save_pdf(dummy_file)
+
+        assert os.path.exists(saved_path)
+
+        assert session_id in saved_path
+
         pdf_text = handler.read_pdf(saved_path)
-        print(f"PDF content extracted ({len(pdf_text)} chars).")
 
-        # ---------- STEP 2: DATA ANALYSIS ----------
-        print("Starting Document Analysis...")
+        assert len(pdf_text) > 0
 
-        analyzer = DocumentAnalysis()  # Auto-detects config
+        assert "Hello, World!" in pdf_text
+
+        analyzer = DocumentAnalysis(config_path="dummy_path")
+
         result = analyzer.analyze_document(document_text=pdf_text)
 
-        print("Analysis Result:")
-        print(result)
+        assert result == expected_result
 
-    except Exception as e:
-        print(f"Test failed with error: {e}")
-        import traceback
+        mock_final_chain.invoke.assert_called_once()
 
-        traceback.print_exc()
-
-
-if __name__ == "__main__":
-    main()
+        assert "document_text" in mock_final_chain.invoke.call_args[0][0]

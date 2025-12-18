@@ -1,15 +1,12 @@
 faiss_db:
   collection_name: "document_portal"
 
-
 embedding_model:
   provider: "google"
   model_name: "text-embedding-004"
 
-
 retriever:
   top_k: 10
-
 
 llm:
   default_provider: "groq"

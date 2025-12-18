@@ -1,6 +1,5 @@
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
-# Prompt for document analysis
 document_analysis_prompt = ChatPromptTemplate.from_template(
     """
     You are an expert Data Analyst and Information Architect with a specialized focus
@@ -24,7 +23,6 @@ Analyze the following document:
 """
 )
 
-# Prompt for document comparison
 document_comparison_prompt = ChatPromptTemplate.from_template(
     """
     You are a Lead Document Auditor with an eagle eye for detail. Your task is to
@@ -57,7 +55,6 @@ Required Output Format:
 """
 )
 
-# Prompt for contextual question rewriting
 contextualize_question_prompt = ChatPromptTemplate.from_messages(
     [
         (
@@ -82,7 +79,6 @@ contextualize_question_prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-# Prompt for answering based on context
 context_qa_prompt = ChatPromptTemplate.from_messages(
     [
         (
@@ -104,7 +100,6 @@ context_qa_prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-# Central dictionary to register prompts
 PROMPT_REGISTRY = {
     "document_analysis": document_analysis_prompt,
     "document_comparison": document_comparison_prompt,

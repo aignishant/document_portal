@@ -62,7 +62,7 @@ from flask import jsonify
 def handle_custom_exception(e):
     # Log the error with structured context
     e.log_error()
-    
+
     # Return a consistent JSON response
     return jsonify(e.to_dict()), e.status_code
 ```
