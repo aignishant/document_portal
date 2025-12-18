@@ -2,7 +2,7 @@
 
 **The Professional / Development-First Standard for AI/ML Applications**
 
-`ai-foundation-kit` (formerly `nishkoder-ai-common`) is an enterprise-grade Python library designed to provide the bedrock for building scalable, robust, and maintainable AI systems. It unifies core utilities—logging, exception handling, file management, model loading, and configuration—under a single, cohesive namespace: `AIFoundationKit`.
+`ai-foundation-kit` is an enterprise-grade Python library designed to provide the bedrock for building scalable, robust, and maintainable AI systems. It unifies core utilities—logging, exception handling, file management, model loading, and configuration—under a single, cohesive namespace: `AIFoundationKit`.
 
 Designed for: **RAG**, **Generative AI**, **Agentic Workflows**, **Deep Learning**, and **Machine Learning**.
 
@@ -142,12 +142,9 @@ async def run_autonomous_analyst(file_path: str):
 
 ## 📝 Changelog
 
-| Version | Package Name | Changes |
-| :--- | :--- | :--- |
-| **v0.1.9** | `ai-foundation-kit` | • **Major Rename**: Renamed package to `ai-foundation-kit`.<br>• **Structure**: Moved all modules under `AIFoundationKit` namespace.<br>• **Refactor**: Introduced `BaseFileManager` and `BaseProvider` abstract classes. |
-| **v0.1.8** | `nishkoder-ai-common` | • Renamed internals to `rag_common`. Refactored imports. |
-| **v0.1.7** | `nishkoder-ai-common` | • Added PDF page numbering support. |
-| **v0.1.0 - v0.1.6** | `nishkoder-ai-common` | • Initial development of logging, config, and model loading utilities. |
+| Version | Changes |
+| :--- | :--- |
+| **v0.1.0** | • **Initial Release**: Fresh launch of `ai-foundation-kit` (Stable).<br>• **Core**: Includes `base` (File/Key Utils), `rag` (Model Loading), logging, exceptions. |
 
 ---
 

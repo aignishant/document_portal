@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from typing import Any, Dict
 
 import yaml
-from ai_common.exception.custom_exception import ConfigException
+from AIFoundationKit.base.exception.custom_exception import ConfigException
 
 
 def load_config(config_path: str) -> Dict[str, Any]:

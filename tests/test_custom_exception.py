@@ -2,15 +2,16 @@ import json
 import logging
 
 import pytest
-from ai_common.exception.custom_exception import (
+from AIFoundationKit.base.exception.custom_exception import (
     AppException,
     AuthenticationException,
+    ConfigException,
     DatabaseException,
     PermissionDeniedException,
     ResourceNotFoundException,
     ValidationException,
 )
-from ai_common.logger.custom_logger import JsonFormatter, get_logger
+from AIFoundationKit.base.logger.custom_logger import JsonFormatter, get_logger
 
 
 # Helper to capture logs

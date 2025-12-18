@@ -4,8 +4,8 @@ import logging.handlers
 import os
 
 # import pytest
-from ai_common.logger.custom_logger import JsonFormatter, get_logger
-from ai_common.logger.logger_utils import add_context
+from AIFoundationKit.base.logger.custom_logger import JsonFormatter, get_logger
+from AIFoundationKit.base.logger.logger_utils import add_context
 
 
 def test_logger_output():

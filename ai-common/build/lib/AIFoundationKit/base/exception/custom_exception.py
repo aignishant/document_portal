@@ -1,7 +1,7 @@
 from typing import Any, Dict, Optional
 
-from ai_common.logger.custom_logger import logger
-from ai_common.logger.logger_utils import add_context
+from AIFoundationKit.base.logger.custom_logger import logger
+from AIFoundationKit.base.logger.logger_utils import add_context
 
 
 class AppException(Exception):
