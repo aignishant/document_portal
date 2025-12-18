@@ -64,3 +64,4 @@ if __name__ == "__main__":
     """
     result = document_comparison.compare_documents(doc1, doc2)
     print(result)
+
