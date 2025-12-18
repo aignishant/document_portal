@@ -4,8 +4,8 @@ from typing import Any, Dict
 
 sys.path.append(os.getcwd())
 
-from ai_common.logger.custom_logger import logger  # noqa: E402
-from ai_common.model_loader import (  # noqa: E402
+from AIFoundationKit.base.logger.custom_logger import logger  # noqa: E402
+from AIFoundationKit.rag.model_loader import (  # noqa: E402
     ApiKeyManager,
     BaseProvider,
     ModelLoader,

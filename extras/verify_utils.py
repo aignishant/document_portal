@@ -3,8 +3,10 @@ import sys
 
 sys.path.append(os.path.abspath("ai-common"))
 
-from ai_common.exception.custom_exception import ConfigException  # noqa: E402
-from ai_common.utils import load_config  # noqa: E402
+from AIFoundationKit.base.exception.custom_exception import (  # noqa: E402
+    ConfigException,
+)
+from AIFoundationKit.base.utils import load_config  # noqa: E402
 
 
 def test_load_config():
