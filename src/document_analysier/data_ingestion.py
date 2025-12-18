@@ -25,8 +25,9 @@ class DocumentHandler:
     """
     DocumentHandler class for handling document ingestion.
 
-    This class manages the storage and retrieval of document files within a session context,
-    ensuring documents are saved safely and can be read for downstream processing.
+    This class manages the storage and retrieval of document files within a session
+    context, ensuring documents are saved safely and can be read for downstream
+    processing.
     """
 
     def __init__(self, data_dir: str = None, session_id: str = None) -> None:
@@ -105,8 +106,9 @@ class DocumentHandler:
         Returns:
             list[str]: A list of strings, where each string contains the text content
                 of a page prefixed by its page number.
-                Note: The current implementation returns a single string joined by newlines.
-                (Signature annotation says list[str], implementation does join)
+                Note: The current implementation returns a single string joined by
+                newlines. (Signature annotation says list[str], implementation
+                does join)
 
         Raises:
             AppException: If reading the PDF fails.

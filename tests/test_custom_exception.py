@@ -5,7 +5,6 @@ import pytest
 from AIFoundationKit.base.exception.custom_exception import (
     AppException,
     AuthenticationException,
-    ConfigException,
     DatabaseException,
     PermissionDeniedException,
     ResourceNotFoundException,

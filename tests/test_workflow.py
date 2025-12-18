@@ -12,7 +12,10 @@ if project_root not in sys.path:
 
 
 # Path to the PDF you want to test
-PDF_PATH = "/home/aignishant/Documents/genaiproject/dp/document_portal/data/document_analysis/NIPS-2017-attention-is-all-you-need-Paper.pdf"
+PDF_PATH = (
+    "/home/aignishant/Documents/genaiproject/dp/document_portal/"
+    "data/document_analysis/NIPS-2017-attention-is-all-you-need-Paper.pdf"
+)
 
 
 class DummyFile:

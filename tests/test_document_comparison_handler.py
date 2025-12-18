@@ -1,12 +1,10 @@
-
 import os
-import shutil
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from AIFoundationKit.base.exception.custom_exception import AppException
+
 from src.document_comparison.document_handler import DocumentComparisonHandler
 
 
@@ -21,7 +19,9 @@ def temp_doc_dir(tmp_path):
 @pytest.fixture
 def doc_handler(temp_doc_dir):
     """Fixture to provide a valid DocumentComparisonHandler instance."""
-    return DocumentComparisonHandler(session_id="test_session", file_path=str(temp_doc_dir))
+    return DocumentComparisonHandler(
+        session_id="test_session", file_path=str(temp_doc_dir)
+    )
 
 
 def test_init_creates_directory(tmp_path):
@@ -36,10 +36,14 @@ def test_init_creates_directory(tmp_path):
 
 
 def test_init_default_directory():
-    """Test initialization with default directory logic (mocking project root to avoid clutter)."""
-    # This is harder to test without mocking the project root resolution logic in the class,
-    # but we can at least ensure it doesn't crash.
-    # We'll use a patch to ensuring we don't actually write to the real 'data' folder for this test
+    """
+    Test initialization with default directory logic.
+    (mocking project root to avoid clutter).
+    """
+    # This is harder to test without mocking the project root resolution logic in the
+    # class, but we can at least ensure it doesn't crash.
+    # We'll use a patch to ensuring we don't actually write to the real 'data' folder
+    # for this test
     with patch("pathlib.Path.mkdir") as mock_mkdir:
         DocumentComparisonHandler(session_id="test_session")
         mock_mkdir.assert_called()
@@ -67,8 +71,7 @@ def test_save_file_path_input(doc_handler, temp_doc_dir, tmp_path):
     source_act.write_text("actual content")
 
     ref_path, act_path = doc_handler.save_file(
-        reference_file=str(source_ref),
-        actual_file=str(source_act)
+        reference_file=str(source_ref), actual_file=str(source_act)
     )
 
     assert os.path.exists(ref_path)
@@ -78,7 +81,7 @@ def test_save_file_path_input(doc_handler, temp_doc_dir, tmp_path):
     assert Path(ref_path).parent == temp_doc_dir
 
 
-def test_save_file_bytes_input(doc_handler, temp_doc_dir):
+def test_save_file_bytes_input(doc_handler):
     """Test saving files when input is bytes."""
     ref_content = b"reference bytes"
     act_content = b"actual bytes"
@@ -87,7 +90,7 @@ def test_save_file_bytes_input(doc_handler, temp_doc_dir):
         reference_file=ref_content,
         actual_file=act_content,
         reference_file_name="ref.bin",
-        actual_file_name="act.bin"
+        actual_file_name="act.bin",
     )
 
     assert os.path.exists(ref_path)
@@ -109,7 +112,7 @@ def test_save_file_clears_previous(doc_handler, temp_doc_dir, tmp_path):
         reference_file=str(source_ref),
         actual_file=str(source_ref),  # Using same for simplicity
         reference_file_name="new_ref.txt",
-        actual_file_name="new_act.txt"
+        actual_file_name="new_act.txt",
     )
 
     # Old file should be gone
@@ -123,7 +126,7 @@ def test_save_file_not_found(doc_handler):
     with pytest.raises(AppException) as excinfo:
         doc_handler.save_file(
             reference_file="non_existent_file.txt",
-            actual_file="another_non_existent.txt"
+            actual_file="another_non_existent.txt",
         )
     assert "Source file not found" in str(excinfo.value)
 
@@ -136,7 +139,8 @@ def test_read_file_success(mock_file_manager_cls, doc_handler):
     mock_instance.read_file.return_value = "file content"
 
     # Re-initialize doc_handler to pick up the mock (or patch where it's used)
-    # Since doc_handler fixture creates instance before patch, we need to patch BEFORE instance creation
+    # Since doc_handler fixture creates instance before patch, we need to patch
+    # BEFORE instance creation
     # OR simpler: just mock the attribute on the existing instance
     doc_handler.file_manager = MagicMock()
     doc_handler.file_manager.read_file.return_value = "file content"

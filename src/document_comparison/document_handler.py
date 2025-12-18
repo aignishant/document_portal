@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import BinaryIO, List, Tuple, Union
+from typing import BinaryIO, Tuple, Union
 
 from AIFoundationKit.base.exception.custom_exception import AppException
 from AIFoundationKit.base.file_manager import BaseFileManager
@@ -21,8 +21,10 @@ class DocumentComparisonHandler:
         Initialize the DocumentComparisonHandler.
 
         Args:
-            session_id (str, optional): The session ID for logging. Defaults to generated ID.
-            file_path (str, optional): The directory path to save/read files. Defaults to "data".
+            session_id (str, optional): The session ID for logging.
+                Defaults to generated ID.
+            file_path (str, optional): The directory path to save/read files.
+                Defaults to "data".
         """
         try:
             self.logger = get_logger(__name__)
@@ -30,7 +32,8 @@ class DocumentComparisonHandler:
             self.logger = add_context(self.logger, session_id=self.session_id)
             self.file_manager = BaseFileManager()
 
-            # Determine project root (3 levels up: src/document_comparison/ -> src/ -> document_portal/)
+            # Determine project root
+            # (3 levels up: src/document_comparison/ -> src/ -> document_portal/)
             project_root = Path(__file__).resolve().parent.parent.parent
 
             if file_path:
@@ -42,7 +45,9 @@ class DocumentComparisonHandler:
 
             self.file_path.mkdir(parents=True, exist_ok=True)
             self.logger.info(
-                f"Document comparison handler initialized with storage: {self.file_path}")
+                f"Document comparison handler initialized with storage: "
+                f"{self.file_path}"
+            )
             self.logger.info("Document comparison handler initialized successfully")
 
         except Exception as e:
@@ -74,7 +79,7 @@ class DocumentComparisonHandler:
         reference_file: Union[str, BinaryIO, bytes],
         actual_file: Union[str, BinaryIO, bytes],
         reference_file_name: str = None,
-        actual_file_name: str = None
+        actual_file_name: str = None,
     ) -> Tuple[str, str]:
         """
         Saves both reference and actual files to the managed directory.
@@ -92,7 +97,10 @@ class DocumentComparisonHandler:
             saved_paths = []
             self.delete_existing_files()
 
-            for file_input, file_name in [(reference_file, reference_file_name), (actual_file, actual_file_name)]:
+            for file_input, file_name in [
+                (reference_file, reference_file_name),
+                (actual_file, actual_file_name),
+            ]:
                 if isinstance(file_input, str):
                     if not os.path.exists(file_input):
                         raise FileNotFoundError(f"Source file not found: {file_input}")
@@ -104,7 +112,8 @@ class DocumentComparisonHandler:
                         file_content = f.read()
 
                     saved_path = self.file_manager.save_file(
-                        file_content, str(self.file_path), file_name=file_name)
+                        file_content, str(self.file_path), file_name=file_name
+                    )
 
                 else:
 
