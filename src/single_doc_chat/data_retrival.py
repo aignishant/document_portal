@@ -57,7 +57,8 @@ class ConversationlRAG:
         try:
             self.logger.info("Loading retriever from vectorstore...")
             retriever = load_retriever_from_vectorstore(
-                vectorstore, search_type=search_type, k=k)
+                vectorstore, search_type=search_type, k=k
+            )
             self.logger.info("Retriever loaded successfully")
             return retriever
         except Exception as e:
