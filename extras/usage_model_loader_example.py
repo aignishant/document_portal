@@ -21,9 +21,7 @@ class DummyProvider(BaseProvider):
         return f"DummyLLM(model={model_name})"
 
     def load_embedding(
-
         self, api_key_mgr: ApiKeyManager, config: Dict[str, Any], **kwargs
-
     ):
 
         return "DummyEmbeddings()"
